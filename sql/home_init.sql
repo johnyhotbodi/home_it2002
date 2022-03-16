@@ -1,0 +1,7 @@
+CREATE TABLE users(
+first_name VARCHAR(128) NOT NULL,
+last_name VARCHAR(128) NOT NULL,
+email VARCHAR(128) PRIMARY KEY,
+lat DECIMAL(9,6),
+long DECIMAL(9,6)
+)

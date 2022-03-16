@@ -1,0 +1,10 @@
+insert into users (first_name, last_name, email, lat, long) values ('Aimil', 'Hearons', 'ahearons0@wired.com', -9.148289, -78.2809879);
+insert into users (first_name, last_name, email, lat, long) values ('Danya', 'Hartly', 'dhartly1@usa.gov', 39.662619, 21.7357206);
+insert into users (first_name, last_name, email, lat, long) values ('Gretchen', 'Force', 'gforce2@imgur.com', 55.6710988, 12.5368683);
+insert into users (first_name, last_name, email, lat, long) values ('Shurlocke', 'Binning', 'sbinning3@engadget.com', 64.8923524, 27.5304357);
+insert into users (first_name, last_name, email, lat, long) values ('Marchall', 'Poulson', 'mpoulson4@slideshare.net', 50.6286293, 13.8637153);
+insert into users (first_name, last_name, email, lat, long) values ('Burgess', 'De Filippo', 'bdefilippo5@csmonitor.com', -11.6604039, 43.2726992);
+insert into users (first_name, last_name, email, lat, long) values ('Konstanze', 'Naylor', 'knaylor6@barnesandnoble.com', -31.3203573, -64.2726889);
+insert into users (first_name, last_name, email, lat, long) values ('Rosco', 'Vasilyev', 'rvasilyev7@myspace.com', 19.6938888, -99.2591666);
+insert into users (first_name, last_name, email, lat, long) values ('Amelie', 'Tollow', 'atollow8@dedecms.com', 25.8516667, 114.7766667);
+insert into users (first_name, last_name, email, lat, long) values ('Brett', 'Howkins', 'bhowkins9@youtu.be', 55.5807611, 37.7673912);

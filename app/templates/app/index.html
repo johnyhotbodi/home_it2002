@@ -1,0 +1,41 @@
+{% load static %}
+<html>
+
+<body>
+    <h2>Customers in the App Store</h2>
+    <img src="{% static 'app/images/nus.jpg' %}" width="10%" alt="NUS logo" /><br />
+    <a href="add">New customer</a>
+    <br /><br />
+    <table border=1>
+        <thead>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>email</th>
+            <th>latitude</th>
+            <th>longitude</th>
+        </thead>
+        {% for user in records %}
+        <tr>
+            <td> {{ user.0 }} </td>
+            <td> {{ user.1 }} </td>
+            <td> {{ user.2 }} </td>
+            <td> {{ user.3 }} </td>
+            <td> {{ user.4 }} </td>
+            <td>
+                <a href="view/{{user.2}}"><button>View</button></a> |
+                <a href="edit/{{user.2}}"><button>Edit</button></a>
+                <a href="locate/{{user.2}}"><button>Locate</button></a>
+                |
+                <form method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{user.2}}" />
+                    <button onclick="return confirm('Are you sure you want to delete {{user.2}}?');" type="submit"
+                        name="action" value="delete">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

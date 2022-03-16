@@ -1,0 +1,46 @@
+<html>
+
+<body>
+    <h2>Edit {{obj.5}}</h2>
+    <a href="/">Back to home</a>
+
+    <p style="color:red">{{ status|safe }}</p>
+
+    <!-- Create a Form -->
+    <form method="POST">
+        <!-- Security token by Django -->
+        {% csrf_token %}
+        <!-- form -->
+        <div id="div_id_first_name" class="control-group"> <label for="id_first_name"
+                class="control-label requiredField">
+                First name<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="first_name" value="{{obj.0}}" maxlength="64"
+                    class="textinput textInput" required="" id="id_first_name"> </div>
+        </div>
+        <div id="div_id_last_name" class="control-group"> <label for="id_last_name" class="control-label requiredField">
+                Last name<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="last_name" value="{{obj.1}}" maxlength="64"
+                    class="textinput textInput" required="" id="id_last_name"> </div>
+        </div>
+        <div id="div_id_email" class="control-group"> <label for="id_email" class="control-label requiredField">
+                Email<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="email" value="{{obj.2}}" maxlength="64"
+                    class="textinput textInput" required="" id="id_email"> </div>
+        </div>
+        <div id="div_id_dob" class="control-group"> <label for="id_lat" class="control-label requiredField">
+                Latitude<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="lat" value="{{obj.3}}" class="textInput textInput"
+                    required="" id="id_lat"> </div>
+        </div>
+        <div id="div_id_lat" class="control-group"> <label for="id_long" class="control-label requiredField">
+                Longitude<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="long" value="{{obj.4}}" class="textInput textInput"
+                    required="" id="id_long"> </div>
+        </div>
+
+        <br>
+        <button type="submit" value="Update">Update</button>
+    </form>
+</body>
+
+</html>

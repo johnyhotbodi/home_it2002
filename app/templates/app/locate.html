@@ -1,0 +1,38 @@
+<html>
+
+<body>
+    <h2>Location of {{user.0}} {{user.1}}</h2>
+    <a href="/">Back to home</a>
+    <br /><br />
+    <table style='text-align:left'>
+        <tr>
+            <th>lat</th>
+            <td>:</td>
+            <td id="lat"> {{ user.3 }} </td>
+        </tr>
+        <tr>
+            <th>long</th>
+            <td>:</td>
+            <td id="long"> {{ user.4 }} </td>
+        </tr>
+    </table>
+
+    <p>
+        <iframe id="iFrameName" width='80%' height='500px' frameBorder='0'></iframe>
+
+    </p>
+    <script>
+        {
+            var str1 = "http://maps.google.com/maps?q=";
+            var str2 = "{{user.3}}";
+            var str3 = ','
+            var str4 = "{{user.4}}";
+            var str5 = "&z=16&output=embed";
+            var str6 = str1 + str2 + str3 + str4 + str5
+            document.getElementById("iFrameName").src = str6
+        }
+    </script>
+
+</body>
+
+</html>
