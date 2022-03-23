@@ -2,36 +2,50 @@
 <html>
 
 <body>
-    <h2>Customers in the App Store</h2>
+    <h2>Properties</h2>
     <img src="{% static 'app/images/nus.jpg' %}" width="10%" alt="NUS logo" /><br />
-    <a href="add">New customer</a>
+    <a href="add">List your property!</a>
+    <br></br>
+    <h3>Filter countries</h3>
+    {% csrf_token %}
+    <form class="add_your_class" method="GET" action="">
+        <input class="add_your_class" type="search" name="search">
+        <button class="add_your_class" type="submit"> Search </button>
+    </form>
     <br /><br />
     <table border=1>
         <thead>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>email</th>
-            <th>latitude</th>
-            <th>longitude</th>
+            <th> City </th>
+            <th>Country</th>
+            <th>Address</th>
+            <th>House type</th>
+            <th>Bedrooms</th>
+            <th>Accomodates</th>
+            <th>Date available </th>
+            <th>Amenities</th>
+            <th>Duration</th>
         </thead>
-        {% for user in records %}
+        {% for property in records %}
         <tr>
-            <td> {{ user.0 }} </td>
-            <td> {{ user.1 }} </td>
-            <td> {{ user.2 }} </td>
-            <td> {{ user.3 }} </td>
-            <td> {{ user.4 }} </td>
-            <td>
-                <a href="view/{{user.2}}"><button>View</button></a> |
-                <a href="edit/{{user.2}}"><button>Edit</button></a>
-                <a href="locate/{{user.2}}"><button>Locate</button></a>
-                |
-                <form method="POST" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="email" value="{{user.2}}" />
-                    <button onclick="return confirm('Are you sure you want to delete {{user.2}}?');" type="submit"
-                        name="action" value="delete">Delete</button>
-                </form>
+            <td> {{ property.2 }} </td>
+            <td> {{ property.3 }} </td>
+            <td> {{ property.1 }} </td>
+            <td> {{ property.6 }} </td>
+            <td> {{ property.7 }} </td>
+            <td> {{ property.8 }} </td>
+            <td> {{ property.9 }} </td>
+            <td> {{ property.11 }} </td>
+            <td> {{ property.12 }} </td>
+            <a href="view/{{property.0}}"><button>View</button></a>
+            <a href="edit/{{property.0}}"><button>Edit</button></a>
+            <a href="locate/{{property.0}}"><button>Locate</button></a>
+
+            <form method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{property.0}}" />
+                <button onclick="return confirm('Are you sure you want to delete this property?');" type="submit"
+                    name="action" value="delete">Delete</button>
+            </form>|
             </td>
         </tr>
         {% endfor %}

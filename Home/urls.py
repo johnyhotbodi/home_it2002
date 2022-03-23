@@ -24,6 +24,8 @@ urlpatterns = [
     path('', app.views.index, name='index'),
     path('add', app.views.add, name='add'),
     path('view/<str:id>', app.views.view, name='view'),
+    #path('view/locate/<str:id>', app.views.locate, name='locate')
     path('edit/<str:id>', app.views.edit, name='edit'),
-    path('locate/<str:id>',app.views.locate,name='locate'),
+    path('view/addimage/<str:id>', app.views.addimage, name='addimage')
+    # path('locate/<str:id>',app.views.locate,name='locate'),
 ]

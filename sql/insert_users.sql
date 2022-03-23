@@ -1,10 +1,13 @@
-insert into users (first_name, last_name, email, lat, long) values ('Aimil', 'Hearons', 'ahearons0@wired.com', -9.148289, -78.2809879);
-insert into users (first_name, last_name, email, lat, long) values ('Danya', 'Hartly', 'dhartly1@usa.gov', 39.662619, 21.7357206);
-insert into users (first_name, last_name, email, lat, long) values ('Gretchen', 'Force', 'gforce2@imgur.com', 55.6710988, 12.5368683);
-insert into users (first_name, last_name, email, lat, long) values ('Shurlocke', 'Binning', 'sbinning3@engadget.com', 64.8923524, 27.5304357);
-insert into users (first_name, last_name, email, lat, long) values ('Marchall', 'Poulson', 'mpoulson4@slideshare.net', 50.6286293, 13.8637153);
-insert into users (first_name, last_name, email, lat, long) values ('Burgess', 'De Filippo', 'bdefilippo5@csmonitor.com', -11.6604039, 43.2726992);
-insert into users (first_name, last_name, email, lat, long) values ('Konstanze', 'Naylor', 'knaylor6@barnesandnoble.com', -31.3203573, -64.2726889);
-insert into users (first_name, last_name, email, lat, long) values ('Rosco', 'Vasilyev', 'rvasilyev7@myspace.com', 19.6938888, -99.2591666);
-insert into users (first_name, last_name, email, lat, long) values ('Amelie', 'Tollow', 'atollow8@dedecms.com', 25.8516667, 114.7766667);
-insert into users (first_name, last_name, email, lat, long) values ('Brett', 'Howkins', 'bhowkins9@youtu.be', 55.5807611, 37.7673912);
+insert into users (userid, first_name, last_name, email, contact, credit_card, identification_card, passport) values (1, 'Desiri', 'Dagger', 'ddagger0@amazon.co.uk', '429-926-3883', '3530563014622542', '267-42-6613', '596-65-3276');
+insert into users (userid, first_name, last_name, email, contact, credit_card, identification_card, passport) values (2, 'Mitch', 'Thurbon', 'mthurbon1@t-online.de', '637-876-0538', '30216522887633', '369-64-3528', '346-70-6786');
+insert into users (userid, first_name, last_name, email, contact, credit_card, identification_card, passport) values (3, 'Pooh', 'Lumbly', 'plumbly2@netscape.com', '234-863-8069', '374283873363386', '295-99-5469', '770-71-9397');
+insert into users (userid, first_name, last_name, email, contact, credit_card, identification_card, passport) values (4, 'Arthur', 'Loudyan', 'aloudyan3@gov.uk', '430-263-4400', '30393650939856', '632-80-7129', '694-08-7475');
+insert into users (userid, first_name, last_name, email, contact, credit_card, identification_card, passport) values (5, 'Garret', 'Common', 'gcommon4@moonfruit.com', '446-761-5811', '4844517698841942', '123-70-3359', '116-71-8405');
+
+insert into property (propertyid, address, city, country, longitute, latitude, house_type, number_of_bedrooms, number_of_guests_allowed, date_available, house_rules, amenities, duration, userid) values (1, '17 Melody Pass', 'Novopokrovka', 'Russia', null, null, 'condominium', 1, 1, '2021-01-01', 'no pets allowed', null, 5, '1');
+insert into property (propertyid, address, city, country, longitute, latitude, house_type, number_of_bedrooms, number_of_guests_allowed, date_available, house_rules, amenities, duration, userid) values (2, '729 Lyons Drive', 'Morón', 'Argentina', null, null, 'studio', 2, 2, '2021-05-01', null, 'gym', 4, '2');
+insert into property (propertyid, address, city, country, longitute, latitude, house_type, number_of_bedrooms, number_of_guests_allowed, date_available, house_rules, amenities, duration, userid) values (3, '8 Algoma Park', 'Mulawato', 'Indonesia', null, null, 'condominium', 3, 3, '2022-04-01', null, null, 1, '3');
+insert into property (propertyid, address, city, country, longitute, latitude, house_type, number_of_bedrooms, number_of_guests_allowed, date_available, house_rules, amenities, duration, userid) values (4, '12803 Old Shore Way', 'Kangdong-ŭp', 'North Korea', null, null, 'villa', 4, 4, '2021-07-13', null, 'do not enter basement', 8, '4');
+insert into property (propertyid, address, city, country, longitute, latitude, house_type, number_of_bedrooms, number_of_guests_allowed, date_available, house_rules, amenities, duration, userid) values (5, '29205 Sullivan Terrace', 'Darungan', 'Indonesia', null, null, 'single-storey', 5, 5, '2019-02-27', null, null, 6, '5');
+insert into property (propertyid, address, city, country, longitute, latitude, house_type, number_of_bedrooms, number_of_guests_allowed, date_available, house_rules, amenities, duration, userid) values (6, '20 Heng Mui Keng Terrace', 'Singapore', 'Singapore', null, null, 'single-storey', 6, 6, '2019-02-27', null, null, 6, '5');
+

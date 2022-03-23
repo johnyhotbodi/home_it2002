@@ -1,36 +1,89 @@
 <html>
 
 <body>
-    <h2>Details for {{user.0}} {{user.1}}</h2>
+    <h2>Details for property</h2>
     <a href="/">Back to home</a>
     <br /><br />
     <table style='text-align:left'>
         <tr>
-            <th>first_name</th>
+            <th>Property ID</th>
             <td>:</td>
-            <td> {{ user.0 }} </td>
+            <td> {{ property.0 }} </td>
         </tr>
         <tr>
-            <th>Last name</th>
+            <th>Amenities</th>
             <td>:</td>
-            <td> {{ user.1 }} </td>
+            <td> {{ property.11 }} </td>
         </tr>
         <tr>
-            <th>Email</th>
+            <th>House type</th>
             <td>:</td>
-            <td> {{ user.2 }} </td>
+            <td> {{ property.5 }} </td>
         </tr>
         <tr>
-            <th>Latitude</th>
+            <th>Bedrooms</th>
             <td>:</td>
-            <td> {{ user.3 }} </td>
+            <td> {{ property.6 }} </td>
         </tr>
         <tr>
-            <th>Longitude</th>
+            <th>Accomodates</th>
             <td>:</td>
-            <td> {{ user.4 }} </td>
+            <td> {{ property.7 }} </td>
+        </tr>
+
+        <tr>
+            <th>Date available, duration </th>
+            <td>:</td>
+            <td> {{ property.9 }}, {{property.12}} days </td>
+        </tr>
+        <tr>
+            <th>House rules</th>
+            <td>:</td>
+            <td> {{ property.10 }} </td>
+        </tr>
+        <tr>
+            <th>Owner</th>
+            <td>:</td>
+            <td> {{user.1}} {{user.2}} </td>
+        </tr>
+        <tr>
+            <th>Owner contact</th>
+            <td>:</td>
+            <td> {{user.4}} </td>
+        </tr>
+        <tr>
+            <th>Owner rating</th>
+            <td>:</td>
+            <td> {{user.8}}</td>
         </tr>
     </table>
+    <a href="addimage/{{user.0}}" class="btn btn-dark btn-block btn-sm -m1">Add Image</a>
+    <p>
+    <div id="image-popups" class="grid">
+        {% for pic in pictures %}
+        <div class="item">
+            <img class="lazy" src="{{ pic.image.url }}" data-mfp-src="{{ pic.image.url }}" data-effect="mfp-zoom-in">
+
+            <p>{{ pic.desc }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    </p>
+    <p>
+        <iframe target="_blank" id="iFrameName" width='80%' height='500px' frameBorder='0'></iframe>
+
+    </p>
+    <script>
+        {
+            var str1 = "https://maps.google.com/maps?q=";
+            var str2 = "{{lat}}";
+            var str3 = ','
+            var str4 = "{{long}}";
+            var str5 = "&z=16&output=embed";
+            var str6 = str1 + str2 + str3 + str4 + str5
+            document.getElementById("iFrameName").src = str6
+        }
+    </script>
 </body>
 
 </html>
