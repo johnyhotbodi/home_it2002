@@ -35,7 +35,7 @@ def register(request):
             group = Group.objects.get(name='customer')
             user.groups.add(group)
             with connection.cursor() as cursor:  # userid is pk
-                cursor.execute("INSERT INTO users (userid,first_name, last_name, email, contact, credit_card, identification_card, passport) VALUES('test1',%s,%s,%s,%s,%s,%s,%s)", [
+                cursor.execute("INSERT INTO users (userid,first_name, last_name, email, contact, credit_card, identification_card, passport) VALUES('test2',%s,%s,%s,%s,%s,%s,%s)", [
                     first_name, last_name, email, contact, credit_card, identification_card, passport])
 
     ##### insert into sql ####
