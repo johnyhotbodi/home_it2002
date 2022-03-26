@@ -23,9 +23,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', app.views.index, name='index'),
     path('add', app.views.add, name='add'),
+    path('login', app.views.loginPage, name='login'),
+    path('logout', app.views.logoutUser, name='logout'),
+    path('register', app.views.register, name='register'),
     path('view/<str:id>', app.views.view, name='view'),
+    path('adminPage', app.views.adminPage, name='adminPage'),
     #path('view/locate/<str:id>', app.views.locate, name='locate')
     path('edit/<str:id>', app.views.edit, name='edit'),
-    path('view/addimage/<str:id>', app.views.addimage, name='addimage')
+    path('view/addimage/<str:id>', app.views.addimage, name='addimage'),
     # path('locate/<str:id>',app.views.locate,name='locate'),
 ]

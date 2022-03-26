@@ -1,5 +1,6 @@
 {% load static %}
 <html>
+<h1>admin only</h1>
 
 <body>
     <a href="logout"> logout</a>
@@ -40,6 +41,13 @@
             <a href="view/{{property.0}}"><button>View</button></a>
             <a href="edit/{{property.0}}"><button>Edit</button></a>
             <a href="locate/{{property.0}}"><button>Locate</button></a>
+
+            <form method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{property.0}}" />
+                <button onclick="return confirm('Are you sure you want to delete this property?');" type="submit"
+                    name="action" value="delete">Delete</button>
+            </form>|
             </td>
         </tr>
         {% endfor %}

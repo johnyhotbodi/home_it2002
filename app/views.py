@@ -2,15 +2,50 @@ from asyncio import protocols
 import email
 from django.shortcuts import render, redirect
 from django.db import connection
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from .models import Category, Photo
+from .forms import CreateUserForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from .decorators import unauthenticated_user, allowed_users, admin_only
 import http.client
 import urllib.parse
 
 
 # Create your views here.
-def index(request):
-    """Shows the main page"""
-    # Use raw query to get all objects
+@unauthenticated_user
+def register(request):
+    form = CreateUserForm()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get('last_name')
+            email = form.cleaned_data.get("email")
+            contact = form.cleaned_data.get('contact')
+            credit_card = form.cleaned_data.get('credit_card')
+            identification_card = form.cleaned_data.get(
+                'identification_card')
+            passport = form.cleaned_data.get('passport')
+
+            group = Group.objects.get(name='customer')
+            user.groups.add(group)
+            with connection.cursor() as cursor:  # userid is pk
+                cursor.execute("INSERT INTO users (userid,first_name, last_name, email, contact, credit_card, identification_card, passport) VALUES('test1',%s,%s,%s,%s,%s,%s,%s)", [
+                    first_name, last_name, email, contact, credit_card, identification_card, passport])
+
+    ##### insert into sql ####
+
+    context = {'form': form}
+    return render(request, 'app/register.html', context)
+
+
+@allowed_users(allowed_roles=['admin'])
+def adminPage(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM property ORDER BY city")
         property = cursor.fetchall()
@@ -21,6 +56,64 @@ def index(request):
             with connection.cursor() as cursor:
                 cursor.execute("DELETE FROM property WHERE propertyid = %s", [
                                request.POST['id']])
+    if request.GET:
+        query = request.GET.get('search')
+        if query == '':
+            property = property
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM property WHERE country = %s", [
+                    query])
+                property = cursor.fetchall()
+    result_dict = {'records': property}
+
+    return render(request, 'app/adminPage.html', result_dict)
+
+
+@unauthenticated_user
+def loginPage(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        if User.objects.filter(email=email).exists():
+            username = User.objects.get(email=email).username
+            user = authenticate(request, username=username, password=password)
+            print(email, password, username)
+            print(user)
+            if user is not None:
+                login(request, user)
+                if request.user.groups.all()[0].name == 'admin':
+                    return redirect('adminPage')
+                else:
+                    return redirect('index')
+            else:
+                messages.info(request, 'email or password is incorrect!')
+        else:
+            messages.info(request, "please register first!")
+    return render(request, 'app/login.html')
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
+
+
+@login_required(login_url='login')
+def index(request):
+    """Shows the main page"""
+    # Use raw query to get all objects
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM property ORDER BY city")
+        property = cursor.fetchall()
+
+    # Delete customer
+    '''
+    if request.POST:
+        if request.POST['action'] == 'delete':
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM property WHERE propertyid = %s", [
+                               request.POST['id']])
+    '''
     if request.GET:
         query = request.GET.get('search')
         if query == '':
@@ -117,6 +210,7 @@ def addimage(request, id):
     return render(request, 'app/addimage.html', context)
 
 
+@login_required(login_url='login')
 def add(request):
     """Shows the main page"""
     context = {}
