@@ -1,0 +1,33 @@
+<html>
+
+<body>
+    <h2>Exchange details</h2>
+    <a href="/">Back to home</a>
+
+    <p style="color:red">{{ status|safe }}</p>
+    <!-- Create a Form -->
+    <form method="POST">
+        <!-- Security token by Django -->
+        {% csrf_token %}
+        <!-- form -->
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                start date <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="startdate" class="textInput" required="" id="id_start">
+            </div>
+        </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                end date <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="enddate" class="textInput" required="" id="id_end">
+            </div>
+        </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                Do you want to include insurance?<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="insurance" class="textInput" required="" id="id_insurance">
+            </div>
+        </div>
+        <br>
+        <button type="submit" value="Add">Add</button>
+    </form>
+</body>
+
+</html>

@@ -1,5 +1,8 @@
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS property;
+DROP TABLE IF EXISTS exchange;
+DROP TABLE IF EXISTS case_log;
+DROP TABLE IF EXISTS pending;
 
 CREATE TABLE IF NOT EXISTS users(
 userid VARCHAR(16) PRIMARY KEY,
@@ -13,7 +16,7 @@ passport VARCHAR(32) NOT NULL,
 rating NUMERIC NOT NULL DEFAULT 4);
 
 CREATE TABLE IF NOT EXISTS property(
-propertyid VARCHAR(16) PRIMARY KEY,
+propertyid VARCHAR(200) PRIMARY KEY,
 	--- same address ---
 address VARCHAR(128) UNIQUE NOT NULL,
 city VARCHAR(16) NOT NULL,
@@ -31,6 +34,42 @@ number_of_guests_allowed NUMERIC NOT NULL,
 date_available DATE,
 house_rules VARCHAR(128),
 amenities VARCHAR(128),
-duration NUMERIC NOT NULL, 
+duration NUMERIC NOT NULL,
 userid VARCHAR(16) NOT NULL,
 FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE);
+
+
+CREATE TABLE IF NOT EXISTS exchange(
+exchangeid VARCHAR(16) PRIMARY KEY,
+userid1 VARCHAR(16) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
+userid2 VARCHAR(16) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
+propertyid1 VARCHAR(200) REFERENCES property(propertyid) ON DELETE CASCADE DEFERRABLE,
+propertyid2 VARCHAR(200) REFERENCES property(propertyid) ON DELETE CASCADE DEFERRABLE,
+start DATE NOT NULL,
+ends DATE NOT NULL,
+deposit NUMERIC NOT NULL DEFAULT 500,
+insurance BOOLEAN NOT NULL,
+deposit_refunded BOOLEAN NOT NULL DEFAULT FALSE,
+revenue NUMERIC NOT NULL DEFAULT 50);
+
+CREATE TABLE IF NOT EXISTS case_log(
+caseid VARCHAR(16) PRIMARY KEY,
+reasons VARCHAR(64) NOT NULL CONSTRAINT reasons CHECK (reasons = 'lost item' OR
+													   reasons = 'vandalism' OR
+													   reasons = 'house rules violation' OR
+													   reasons = 'other'),
+complain_by_userid VARCHAR(16) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
+complain_of_userid VARCHAR(16) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
+deposit_deduction BOOLEAN NOT NULL DEFAULT FALSE,
+rating_deduction BOOLEAN NOT NULL DEFAULT FALSE,
+status BOOLEAN NOT NULL DEFAULT FALSE,
+remarks VARCHAR(128) DEFAULT 'None');
+
+CREATE TABLE pending(
+requested_from VARCHAR(16) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
+requested_to VARCHAR(16) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
+start_date DATE NOT NULL,
+end_date DATE NOT NULL,
+from_insurance BOOLEAN NOT NULL,
+PRIMARY KEY(requested_from,requested_to)
+)

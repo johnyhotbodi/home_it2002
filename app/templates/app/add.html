@@ -1,7 +1,7 @@
 <html>
 
 <body>
-    <h2>Add New Customer</h2>
+    <h2>List your property</h2>
     <a href="/">Back to home</a>
 
     <p style="color:red">{{ status|safe }}</p>
@@ -12,29 +12,56 @@
         <!-- form -->
         <div id="div_id_first_name" class="control-group"> <label for="id_first_name"
                 class="control-label requiredField">
-                First name<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="first_name" maxlength="64" class="textinput textInput"
-                    required="" id="id_first_name"> </div>
+                Address<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="address" maxlength="200" class="textinput textInput"
+                    required="" id="id_address"> </div>
         </div>
         <div id="div_id_last_name" class="control-group"> <label for="id_last_name" class="control-label requiredField">
-                Last name<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="last_name" maxlength="64" class="textinput textInput"
-                    required="" id="id_last_name"> </div>
+                City<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="city" maxlength="64" class="textinput textInput" required=""
+                    id="id_city"> </div>
         </div>
         <div id="div_id_email" class="control-group"> <label for="id_email" class="control-label requiredField">
-                Email<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="email" maxlength="64" class="textinput textInput"
-                    required="" id="id_email"> </div>
+                Country<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="country" maxlength="64" class="textinput textInput"
+                    required="" id="id_country"> </div>
         </div>
         <div id="div_id_lat" class="control-group"> <label for="id_lat" class="control-label requiredField">
-                Latitude <span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="lat" class="textInput" required="" id="id_lat"> </div>
-        </div>
-        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
-                Longitude <span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="long" class="textInput" required="" id="id_long">
+                Housetype <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="housetype" class="textInput" required="" id="id_housetype">
             </div>
         </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                Number of bedrooms <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="bedrooms" class="textInput" required="" id="id_bedrooms">
+            </div>
+        </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                Accomadates(number of guests) <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="guest" class="textInput" required="" id="id_guest">
+            </div>
+        </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                Date available <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="date" class="textInput" required="" id="id_date">
+            </div>
+        </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                House rules <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="rules" class="textInput" required="" id="id_rules">
+            </div>
+        </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                Amenities <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="amenities" class="textInput" required="" id="id_amenities">
+            </div>
+        </div>
+        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                duration(days)<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="duration" class="textInput" required="" id="id_duration">
+            </div>
+        </div>
+
         <br>
         <button type="submit" value="Add">Add</button>
     </form>

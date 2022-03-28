@@ -5,7 +5,7 @@
     <a href="logout"> logout</a>
     <h2>Properties</h2>
     <img src="{% static 'app/images/nus.jpg' %}" width="10%" alt="NUS logo" /><br />
-    <a href="add">List your property!</a>
+    <a href="add/{{user}}">List your property!</a>
     <br></br>
     <h3>Filter countries</h3>
     {% csrf_token %}
@@ -40,10 +40,21 @@
             <a href="view/{{property.0}}"><button>View</button></a>
             <a href="edit/{{property.0}}"><button>Edit</button></a>
             <a href="locate/{{property.0}}"><button>Locate</button></a>
-            </td>
+            <a href="exchange/{{property.0}}"><button>exchange!</button></a>
+
         </tr>
         {% endfor %}
     </table>
+    <h2> exchange requests</h2>
+    {% if pendings %}
+    {{ pendings.0 }}
+    {{ pendings.1 }}
+    {{ pendings.2 }}
+    {{ pendings.3 }}
+    {{ pendings.4 }}
+    <button class="add_your_class" type="accept"> Accept </button>
+    <button class="add_your_class" type="decline"> Decline </button>
+    {% endif %}
 </body>
 
 </html>

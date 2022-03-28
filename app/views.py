@@ -1,5 +1,6 @@
 from asyncio import protocols
 import email
+import re
 from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib.auth.forms import UserCreationForm
@@ -13,9 +14,13 @@ from django.contrib.auth.models import Group
 from .decorators import unauthenticated_user, allowed_users, admin_only
 import http.client
 import urllib.parse
-
+from string import ascii_letters
+from random import choice
+from datetime import datetime
 
 # Create your views here.
+
+
 @unauthenticated_user
 def register(request):
     form = CreateUserForm()
@@ -23,6 +28,7 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
+            username = form.cleaned_data.get('username')
             first_name = form.cleaned_data.get("first_name")
             last_name = form.cleaned_data.get('last_name')
             email = form.cleaned_data.get("email")
@@ -35,8 +41,8 @@ def register(request):
             group = Group.objects.get(name='customer')
             user.groups.add(group)
             with connection.cursor() as cursor:  # userid is pk
-                cursor.execute("INSERT INTO users (userid,first_name, last_name, email, contact, credit_card, identification_card, passport) VALUES('test2',%s,%s,%s,%s,%s,%s,%s)", [
-                    first_name, last_name, email, contact, credit_card, identification_card, passport])
+                cursor.execute("INSERT INTO users (userid,first_name, last_name, email, contact, credit_card, identification_card, passport) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", [
+                    username, first_name, last_name, email, contact, credit_card, identification_card, passport])
 
     ##### insert into sql ####
 
@@ -103,9 +109,13 @@ def index(request):
     """Shows the main page"""
     # Use raw query to get all objects
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM property ORDER BY city")
+        cursor.execute(
+            "SELECT * FROM property WHERE userid <> %s ORDER BY country", [request.user.username])
         property = cursor.fetchall()
-
+        cursor.execute(
+            "SELECT * FROM pending WHERE requested_to = %s", [request.user.username])
+        pendings = cursor.fetchall()
+    # print(pendings[0][0])
     # Delete customer
     '''
     if request.POST:
@@ -123,8 +133,13 @@ def index(request):
                 cursor.execute("SELECT * FROM property WHERE country = %s", [
                     query])
                 property = cursor.fetchall()
-    result_dict = {'records': property}
-
+    '''
+    elif request.POST:
+        exchangeid = ''.join([choice(ascii_letters) for i in range(16)])
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO exchange VALUES(%s,%s,%s,%s,%s,%s,%s,%d,%s,%s,%d)",[exchangeid,pendings[0][0],pendings[0][1],]) 
+    '''
+    result_dict = {'records': property, 'pendings': pendings}
     return render(request, 'app/index.html', result_dict)
 
 # Create your views here.
@@ -153,7 +168,6 @@ def view(request, id):
     })
 
     conn.request('GET', '/v1/forward?{}'.format(params))
-
     res = conn.getresponse()
     data = res.read()
     res = data.decode('utf-8')
@@ -211,31 +225,50 @@ def addimage(request, id):
 
 
 @login_required(login_url='login')
-def add(request):
+def add(request, id):
     """Shows the main page"""
     context = {}
-    status = ''
-
+    # status = ''
+    print(id)
     if request.POST:
-        # Check if customerid is already in the table
-        with connection.cursor() as cursor:
+        propertyid = str(id) + request.POST['address']
+        # Check if propertyid is already in the table
+        address_post = request.POST['address']
+        date_post = datetime.strptime(request.POST['date'], '%d/%m/%y').date()
+        print(date_post)
 
-            cursor.execute("SELECT * FROM users WHERE email = %s",
-                           [request.POST['email']])
-            user = cursor.fetchone()
-            # No customer with same id
-            if user == None:
-                # TODO: date validation
-                cursor.execute("INSERT INTO users VALUES (%s, %s, %s, %s, %s)", [request.POST['first_name'], request.POST['last_name'], request.POST['email'],
-                                                                                 request.POST['lat'], request.POST['long']])
+        with connection.cursor() as cursor:
+            address_exist = cursor.execute(
+                "SELECT * FROM property WHERE address = %s", [address_post])
+            flag = cursor.fetchone()
+            if flag == None:
+                cursor.execute('''INSERT INTO property(propertyid, address,city,country,house_type,number_of_bedrooms,
+                number_of_guests_allowed,date_available,house_rules,amenities,duration,userid)
+                    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+                               [propertyid, request.POST['address'], request.POST['city'], request.POST['country'],
+                                request.POST['housetype'], request.POST['bedrooms'], request.POST['guest'], date_post,
+                                request.POST['rules'], request.POST['amenities'], request.POST['duration'], id])
+                messages.info(request, 'Your property is successfully listed!')
                 return redirect('index')
             else:
-                status = 'user with email %s already exists' % (
-                    request.POST['email'])
-
-    context['status'] = status
+                messages.info(request, 'This property is already listed :(')
+    # context['status'] = status
 
     return render(request, "app/add.html", context)
+
+
+def exchange(request, id):
+    print(request.user.username)
+    if request.POST:
+        start = datetime.strptime(request.POST['startdate'], '%d/%m/%y').date()
+        end = datetime.strptime(request.POST['enddate'], '%d/%m/%y').date()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT userid FROM property WHERE propertyid = %s", [id])
+            ownerid = cursor.fetchone()
+            cursor.execute("INSERT INTO pending VALUES(%s,%s,%s,%s,%s)",
+                           [request.user.username, ownerid, start, end, request.POST['insurance']])
+    return render(request, 'app/exchange.html')
 
 
 def locate(request, id):
@@ -246,7 +279,8 @@ def locate(request, id):
     result_dict = {"user": user}
     return render(request, 'app/locate.html', result_dict)
 
-# Create your views here.
+
+# def notification(request, id):
 
 
 def edit(request, id):
