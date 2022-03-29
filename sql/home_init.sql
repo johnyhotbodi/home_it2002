@@ -17,7 +17,6 @@ rating NUMERIC NOT NULL DEFAULT 4);
 
 CREATE TABLE IF NOT EXISTS property(
 propertyid VARCHAR(200) PRIMARY KEY,
-	--- same address ---
 address VARCHAR(128) UNIQUE NOT NULL,
 city VARCHAR(16) NOT NULL,
 country VARCHAR(16) NOT NULL,
@@ -72,4 +71,4 @@ start_date DATE NOT NULL,
 end_date DATE NOT NULL,
 from_insurance BOOLEAN NOT NULL,
 PRIMARY KEY(requested_from,requested_to)
-)
+);
