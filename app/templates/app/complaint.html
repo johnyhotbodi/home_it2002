@@ -1,0 +1,16 @@
+<h2>Complain</h2>
+
+<body>
+    <form method="POST">
+        <!-- Security token by Django -->
+        {% csrf_token %}
+        <!-- form -->
+        <div id="div_id_first_name" class="control-group"> <label for="id_first_name"
+                class="control-label requiredField">
+                Reasons<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="Reasons" maxlength="200" class="textinput textInput"
+                    required="" id="id_address"> </div>
+        </div>
+        <button type="submit" value="Add">Submit complain</button>
+    </form>
+</body>

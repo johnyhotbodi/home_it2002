@@ -5,14 +5,23 @@
     <a href="logout"> logout</a>
     <h2>Properties</h2>
     <img src="{% static 'app/images/nus.jpg' %}" width="10%" alt="NUS logo" /><br />
-    <a href="add/{{user}}">List your property!</a>
+    <a href="manage/{{user}}"> Manage my properties</a>
+    <a href="profile/{{user}}"> My profile</a>
     <br></br>
-    <h3>Filter countries</h3>
+    <a href="add/{{user}}">List your property!</a>
+    <a href='/myexchange/{{user}}'>My exchanges</a>
+    <br></br>
+    <h3>Filter criteria</h3>
     {% csrf_token %}
     <form class="add_your_class" method="GET" action="">
-        <input class="add_your_class" type="search" name="search">
+        <input class="add_your_class" type="search" name="country" placeholder="Country">
+        <input class="add_your_class" type="search" name="startdate" placeholder="Start date">
+        <input class="add_your_class" type="search" name="enddate" placeholder="End date">
         <button class="add_your_class" type="submit"> Search </button>
     </form>
+    {% for message in messages %}
+    <p id="messages">{{message}}</p>
+    {% endfor %}
     <br /><br />
     <table border=1>
         <thead>
@@ -22,7 +31,8 @@
             <th>House type</th>
             <th>Bedrooms</th>
             <th>Accomodates</th>
-            <th>Date available </th>
+            <th>Date available(start) </th>
+            <th>Date available(end) </th>
             <th>Amenities</th>
             <th>Duration</th>
         </thead>
@@ -35,6 +45,7 @@
             <td> {{ property.7 }} </td>
             <td> {{ property.8 }} </td>
             <td> {{ property.9 }} </td>
+            <td> {{ property.10 }} </td>
             <td> {{ property.11 }} </td>
             <td> {{ property.12 }} </td>
             <a href="view/{{property.0}}"><button>View</button></a>
@@ -46,15 +57,32 @@
         {% endfor %}
     </table>
     <h2> exchange requests</h2>
-    {% if pendings %}
-    {{ pendings.0 }}
-    {{ pendings.1 }}
-    {{ pendings.2 }}
-    {{ pendings.3 }}
-    {{ pendings.4 }}
-    <button class="add_your_class" type="accept"> Accept </button>
-    <button class="add_your_class" type="decline"> Decline </button>
-    {% endif %}
+    <table>
+        {% if pendings %}
+        <thead>
+            <th>requested from</th>
+            <th>proposed start date</th>
+            <th>proposed end date</th>
+
+        </thead>
+        {% endif %}
+        {% if pendings %}
+        {% for p in pendings %}
+        <tr>
+            <td>{{ p.0 }}</td>
+            <td>{{ p.2 }}</td>
+            <td>{{ p.3 }}</td>
+            <a href="options/{{p.0}}"><button>View exchange options</button></a>
+            <form method="post">
+                {% csrf_token %}
+                <button class="button is-danger" name="acceptance" value="Decline">
+                    Decline
+                </button>
+            </form>
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </table>
 </body>
 
 </html>

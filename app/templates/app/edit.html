@@ -1,46 +1,57 @@
 <html>
 
 <body>
-    <h2>Edit {{obj.5}}</h2>
-    <a href="/">Back to home</a>
+        <h2>Edit property details</h2>
+        <a href="/manage/{{user}}">Back to manage my properties</a>
 
-    <p style="color:red">{{ status|safe }}</p>
+        <p style="color:red">{{ status|safe }}</p>
 
-    <!-- Create a Form -->
-    <form method="POST">
-        <!-- Security token by Django -->
-        {% csrf_token %}
-        <!-- form -->
-        <div id="div_id_first_name" class="control-group"> <label for="id_first_name"
-                class="control-label requiredField">
-                First name<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="first_name" value="{{obj.0}}" maxlength="64"
-                    class="textinput textInput" required="" id="id_first_name"> </div>
-        </div>
-        <div id="div_id_last_name" class="control-group"> <label for="id_last_name" class="control-label requiredField">
-                Last name<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="last_name" value="{{obj.1}}" maxlength="64"
-                    class="textinput textInput" required="" id="id_last_name"> </div>
-        </div>
-        <div id="div_id_email" class="control-group"> <label for="id_email" class="control-label requiredField">
-                Email<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="email" value="{{obj.2}}" maxlength="64"
-                    class="textinput textInput" required="" id="id_email"> </div>
-        </div>
-        <div id="div_id_dob" class="control-group"> <label for="id_lat" class="control-label requiredField">
-                Latitude<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="lat" value="{{obj.3}}" class="textInput textInput"
-                    required="" id="id_lat"> </div>
-        </div>
-        <div id="div_id_lat" class="control-group"> <label for="id_long" class="control-label requiredField">
-                Longitude<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="long" value="{{obj.4}}" class="textInput textInput"
-                    required="" id="id_long"> </div>
-        </div>
-
-        <br>
-        <button type="submit" value="Update">Update</button>
-    </form>
+        <!-- Create a Form -->
+        <form method="POST">
+                <!-- Security token by Django -->
+                {% for message in messages %}
+                <p id="messages">{{message}}</p>
+                {% endfor %}
+                {% csrf_token %}
+                <!-- form -->
+                <div id="div_id_bedrooms" class="control-group"> <label for="id_bedrooms"
+                                class="control-label requiredField">
+                                Number of bedrooms<span class="asteriskField">*</span> </label>
+                        <div class="controls"> <input type="text" name="bedrooms" maxlength="200"
+                                        class="textinput textInput" required="" id="id_bedrooms"> </div>
+                </div>
+                <div id="div_id_accomodate" class="control-group"> <label for="div_id_accomodate"
+                                class="control-label requiredField">
+                                Accomadates<span class="asteriskField">*</span> </label>
+                        <div class="controls"> <input type="text" name="accomodate" maxlength="200"
+                                        class="textinput textInput" required="" id="id_accomodate"> </div>
+                </div>
+                <div id="div_id_start_date" class="control-group"> <label for="id_start_date"
+                                class="control-label requiredField">
+                                Start date avaialble (dd/mm/yy)<span class="asteriskField">*</span> </label>
+                        <div class="controls"> <input type="text" name="startdate" maxlength="200"
+                                        class="textinput textInput" required="" id="id_startdate"> </div>
+                </div>
+                <div id="div_id_end_date" class="control-group"> <label for="id_end_date"
+                                class="control-label requiredField">
+                                End date available (dd/mm/yy)<span class="asteriskField">*</span> </label>
+                        <div class="controls"> <input type="text" name="enddate" maxlength="200"
+                                        class="textinput textInput" required="" id="id_enddate"> </div>
+                </div>
+                <div id="div_id_rules" class="control-group"> <label for="id_rules" class="control-label requiredField">
+                                House rules<span class="asteriskField">*</span> </label>
+                        <div class="controls"> <input type="text" name="rules" maxlength="200"
+                                        class="textinput textInput" required="" id="id_rules"> </div>
+                </div>
+                <div id="div_id_amenities" class="control-group"> <label for="id_amenities"
+                                class="control-label requiredField">
+                                Amenities<span class="asteriskField">*</span> </label>
+                        <div class="controls"> <input type="text" name="amenities" maxlength="200"
+                                        class="textinput textInput" required="" id="id_amenities"> </div>
+                </div>
+                <button type="submit" value="Update">Update</button>
+                <br>
+        </form>
 </body>
 
 </html>

@@ -26,11 +26,17 @@
             <div class="controls"> <input type="text" name="country" maxlength="64" class="textinput textInput"
                     required="" id="id_country"> </div>
         </div>
-        <div id="div_id_lat" class="control-group"> <label for="id_lat" class="control-label requiredField">
-                Housetype <span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="housetype" class="textInput" required="" id="id_housetype">
-            </div>
-        </div>
+        <label for="house">House type</label>
+        <select name="housetype" id="housetype">
+            <optgroup label="House Type">
+                <option value="condominium">Condominium</option>
+                <option value="villa">Villa</option>
+                <option value="studio">Studio</option>
+                <option value="single-storey">Single storey house</option>
+                <option value="double-storey">Double storey house</option>
+                <option value="other">Other</option>
+            </optgroup>
+        </select>
         <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
                 Number of bedrooms <span class="asteriskField">*</span> </label>
             <div class="controls"> <input type="text" name="bedrooms" class="textInput" required="" id="id_bedrooms">
@@ -42,29 +48,32 @@
             </div>
         </div>
         <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
-                Date available <span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="date" class="textInput" required="" id="id_date">
+                Start Date available(dd/mm/yy) <span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="startdate" class="textInput" required="" id="id_startdate">
             </div>
         </div>
         <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
-                House rules <span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="rules" class="textInput" required="" id="id_rules">
+                End Date available(dd/mm/yy)<span class="asteriskField">*</span> </label>
+            <div class="controls"> <input type="text" name="enddate" class="textInput" required="" id="id_enddate">
             </div>
-        </div>
-        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
-                Amenities <span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="amenities" class="textInput" required="" id="id_amenities">
-            </div>
-        </div>
-        <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
-                duration(days)<span class="asteriskField">*</span> </label>
-            <div class="controls"> <input type="text" name="duration" class="textInput" required="" id="id_duration">
-            </div>
-        </div>
 
-        <br>
-        <button type="submit" value="Add">Add</button>
+            <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                    House rules <span class="asteriskField">*</span> </label>
+                <div class="controls"> <input type="text" name="rules" class="textInput" required="" id="id_rules">
+                </div>
+            </div>
+            <div id="div_id_long" class="control-group"> <label for="id_long" class="control-label requiredField">
+                    Amenities <span class="asteriskField">*</span> </label>
+                <div class="controls"> <input type="text" name="amenities" class="textInput" required=""
+                        id="id_amenities">
+                </div>
+            </div>
+            <br>
+            <button type="submit" value="Add">Add</button>
     </form>
+    {% for message in messages %}
+    <p id="messages">{{message}}</p>
+    {% endfor %}
 </body>
 
 </html>

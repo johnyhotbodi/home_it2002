@@ -13,10 +13,12 @@ class CreateUserForm(UserCreationForm):
     first_name = forms.CharField(max_length=100)
     last_name = forms.CharField(max_length=100)
     email = forms.EmailField()
+    country_code = forms.CharField(
+        max_length=16, widget=forms.TextInput(attrs={'placeholder': '+65/+60/+66'}))
     contact = forms.IntegerField()
     credit_card = forms.IntegerField()
     identification_card = forms.CharField()
-    passport = forms.CharField()
+    passport = forms.CharField(max_length=9)
 
     def __init__(self, *args, **kargs):
         super(CreateUserForm, self).__init__(*args, **kargs)
@@ -30,5 +32,5 @@ class CreateUserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = UserCreationForm.Meta.fields + ('username', 'first_name', 'last_name', 'email', 'contact', 'credit_card', 'identification_card',
+        fields = UserCreationForm.Meta.fields + ('username', 'first_name', 'last_name', 'email', 'country_code', 'contact', 'credit_card', 'identification_card',
                                                  'passport', 'password1')

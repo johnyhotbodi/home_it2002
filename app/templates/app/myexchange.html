@@ -1,0 +1,107 @@
+<h2>My exchange</h2>
+<a href="/">Back to home</a>
+{% for message in messages %}
+<p id="messages">{{message}}</p>
+{% endfor %}
+
+{% if ongoing1 or ongoing2 %}
+<h2>Ongoing exchanges</h2>
+<table border=1>
+    <thead>
+        <th> Exchange owner </th>
+        <th>Property</th>
+        <th>start date</th>
+        <th>end date</th>
+    </thead>
+    {% for ex in ongoing1 %}
+    <tr>
+        <td> {{ ex.2 }} </td>
+        <td> {{ ex.4 }} </td>
+        <td> {{ ex.5 }} </td>
+        <td> {{ ex.6 }} </td>
+        <form method="post">
+            {% csrf_token %}
+            <button class="button is-danger" name="end" value="{{ex.0}}">
+                End exchange
+            </button>
+            <a href="/complaint/{{ex.0}}" class="btn btn-primary">File a complaint</a>
+            <form action="/action_page.php">
+                <label for="cars">Complain</label>
+                <select name="reason" id="reason">
+                    <optgroup label="Reasons">
+                        <option value="{{ex.0}}lost item">Lost Item</option>
+                        <option value="{{ex.0}}vandalism">Vandalism</option>
+                        <option value="{{ex.0}}house rules violation">House rules violation</option>
+                        <option value="{{ex.0}}other">Other</option>
+                    </optgroup>
+                </select>
+                <br><br>
+                <input type="submit" value="Submit">
+            </form>
+            <br></br>
+    </tr>
+    {% endfor %}
+    {% for i in ongoing2 %}
+    <tr>
+        <td> {{ i.1 }} </td>
+        <td> {{ i.3 }} </td>
+        <td> {{ i.5 }} </td>
+        <td> {{ i.6 }} </td>
+        <form method="post">
+            {% csrf_token %}
+            <button class="button is-danger" name="end" value="{{i.0}}">
+                End exchange
+            </button>
+            <a href="/complaint/{{i.0}}" class="btn btn-primary">File a complaint</a>
+            <form action="/action_page.php">
+                <label for="cars">Complain</label>
+                <select name="reason" id="reason">
+                    <optgroup label="Reasons">
+                        <option value=None selected disabled hidden>None</option>
+                        <option value="{{ex.0}}lost item">Lost Item</option>
+                        <option value="{{ex.0}}vandalism">Vandalism</option>
+                        <option value="{{ex.0}}house rules violation">House rules violation</option>
+                        <option value="{{ex.0}}other">Other</option>
+                    </optgroup>
+                </select>
+                <br><br>
+                <input type="submit" value="Submit">
+            </form>
+        </form>
+        <br></br>
+    </tr>
+    {% endfor %}
+    <br>
+</table>
+{% endif %}
+
+{% if closed1 or closed2 %}
+<h2>Past exchanges</h2>
+<table border=1>
+    <thead>
+        <th> Exchange owner </th>
+        <th>Property</th>
+        <th>start date</th>
+        <th>end date</th>
+    </thead>
+    {% for c in closed1 %}
+    <tr>
+        <td> {{ c.2 }} </td>
+        <td> {{ c.4 }} </td>
+        <td> {{ c.5 }} </td>
+        <td> {{ c.6 }} </td>
+        <br></br>
+    </tr>
+    {% endfor %}
+    {% for e in closed2 %}
+    <tr>
+        <td> {{ e.1 }} </td>
+        <td> {{ e.3 }} </td>
+        <td> {{ e.5 }} </td>
+        <td> {{ e.6 }} </td>
+        <br></br>
+    </tr>
+    {% endfor %}
+    <br>
+</table>
+{% endif %}

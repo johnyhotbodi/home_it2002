@@ -1,0 +1,46 @@
+<html>
+
+<body>
+    <h2>properties of {{name}}</h2>
+    <table border=1>
+        <thead>
+            <th> City </th>
+            <th>Country</th>
+            <th>Address</th>
+            <th>House type</th>
+            <th>Bedrooms</th>
+            <th>Accomodates</th>
+            <th>Date available(start) </th>
+            <th>Date available(end) </th>
+            <th>Amenities</th>
+            <th>Duration</th>
+        </thead>
+        {% for property in records %}
+        <tr>
+            <td> {{ property.2 }} </td>
+            <td> {{ property.3 }} </td>
+            <td> {{ property.1 }} </td>
+            <td> {{ property.6 }} </td>
+            <td> {{ property.7 }} </td>
+            <td> {{ property.8 }} </td>
+            <td> {{ property.9 }} </td>
+            <td> {{ property.10 }} </td>
+            <td> {{ property.11 }} </td>
+            <td> {{ property.12 }} </td>
+            <a href="/view/{{property.0}}"><button>View</button></a>
+            <form method="post">
+                {% csrf_token %}
+                <button class="button is-danger" name="acceptance" value="{{property.0}}">
+                    I choose this!
+                </button>
+            </form>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,32 @@
+<h2>My profile</h2>
+<a href="/">Back to home</a>
+
+<h3>Wallet balance</h3>
+{{user.10}}
+
+<h3>My rating</h3>
+{{user.9}}
+
+<h3>Edit my contact details</h3>
+<form method="POST">
+    <!-- Security token by Django -->
+    {% csrf_token %}
+    <!-- form -->
+    <label for="countrycode">Country code</label>
+    <select name="countrycode" id="countrycode">
+        <optgroup label="Country code">
+            <option value="+60">+60</option>
+            <option value="+65">+65</option>
+            <option value="+66">+66</option>
+        </optgroup>
+    </select>
+    <div id="div_id_last_name" class="control-group"> <label for="id_last_name" class="control-label requiredField">
+            Contact<span class="asteriskField">*</span> </label>
+        <div class="controls"> <input type="number" name="contact" maxlength="10" required="" id="id_city"
+                value="{{user.5}}"> </div>
+    </div>
+    <button type="submit" value="Edit">Edit</button>
+</form>
+{% for message in messages %}
+<p id="messages">{{message}}</p>
+{% endfor %}
