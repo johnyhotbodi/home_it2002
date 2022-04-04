@@ -153,7 +153,7 @@ def adminPage(request):
 def loginPage(request):
     if request.method == "POST":
         email = request.POST.get("email")
-        print(email)
+        print('email:', email)
         password = request.POST.get("password")
         if User.objects.filter(email=email).exists():
             print('haha')
@@ -171,7 +171,7 @@ def loginPage(request):
                 messages.info(request, 'email or password is incorrect!')
         else:
             messages.info(request, "please register first!")
-    return render(request, 'app/trylogin.html')
+    return render(request, 'app/trylogin2.html')
 
 
 def logoutUser(request):
@@ -404,7 +404,7 @@ def add(request, id):
                         request, 'This property is already listed :(')
     # context['status'] = status
     '''
-    return render(request, "app/add.html", context)
+    return render(request, "app/tryadd2.html", context)
 
 
 @ login_required(login_url='login')
