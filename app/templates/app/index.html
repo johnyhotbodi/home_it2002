@@ -70,8 +70,8 @@
         {% for p in pendings %}
         <tr>
             <td>{{ p.0 }}</td>
-            <td>{{ p.2 }}</td>
             <td>{{ p.3 }}</td>
+            <td>{{ p.4 }}</td>
             <a href="options/{{p.0}}"><button>View exchange options</button></a>
             <form method="post">
                 {% csrf_token %}

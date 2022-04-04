@@ -21,6 +21,10 @@
             <th>House type</th>
             <th>Start date</th>
             <th>End date </th>
+            <th>Number of bedrooms </th>
+            <th>Number of guests </th>
+            <th>House rules </th>
+            <th>amenities </th>
         </thead>
         {% for p in obj %}
         <tr>
@@ -30,6 +34,10 @@
             <td> {{ p.6 }} </td>
             <td> {{ p.9 }} </td>
             <td> {{ p.10 }} </td>
+            <td> {{ p.7 }} </td>
+            <td> {{ p.8 }} </td>
+            <td> {{ p.11 }} </td>
+            <td> {{ p.12 }} </td>
             <br></br>
             <td>
                 <a href="/edit/{{p.0}}"><button>Edit details of this property </button></a>|

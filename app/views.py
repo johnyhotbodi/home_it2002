@@ -21,6 +21,7 @@ from string import ascii_letters
 from random import choice
 from datetime import datetime
 from django.db import transaction
+from django.urls import reverse
 # Create your views here.
 
 
@@ -83,9 +84,20 @@ def register(request):
                     messages.info(
                         request, 'This passport number is already connected to another account')
                     return redirect('register')
-                if (not (country_code == '+65' and len(str(contact)) == 8) and not(country_code == '+60' and len(str(contact)) == 8 or len(str(contact)) == 9)):
+                print(passport)
+                if len(passport) != 8 and len(passport) != 9:
+                    print('wrong')
+                    messages.info(
+                        request, 'Please enter a valid passport (8 to 9 characters)')
+                    return redirect('register')
+                if (not (country_code == '+65' and len(str(contact)) == 8) and not(country_code == '+66' and len(str(contact)) == 8) and not(country_code == '+60' and (len(str(contact)) == 9 or len(str(contact)) == 10))):
                     messages.info(
                         request, 'Please enter a valid contact number')
+                    return redirect('register')
+                if country_code != '+60' and country_code != '+65' and country_code != '+66':
+                    messages.info(
+                        request, 'Please enter +60/+65/+66 for country code')
+                    return redirect('register')
                 else:
                     print('haha')
 
@@ -159,7 +171,7 @@ def loginPage(request):
                 messages.info(request, 'email or password is incorrect!')
         else:
             messages.info(request, "please register first!")
-    return render(request, 'app/login.html')
+    return render(request, 'app/trylogin.html')
 
 
 def logoutUser(request):
@@ -194,9 +206,24 @@ def index(request):
         print('first:', start_date, end_date)
 
         if start_date != '':
-            start_date = datetime.strptime(start_date, '%d/%m/%y').date()
+            print('check')
+            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", start_date) != None:
+                print('check2')
+                start_date = datetime.strptime(start_date, '%d/%m/%y').date()
+                print(start_date)
+            else:
+                messages.info(
+                    request, "Please enter valid start date")
+                return redirect('index')
         if end_date != '':
-            end_date = datetime.strptime(end_date, '%d/%m/%y').date()
+            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", start_date) != None:
+                print('check2')
+                end_date = datetime.strptime(end_date, '%d/%m/%y').date()
+                print(start_date)
+            else:
+                messages.info(
+                    request, "Please enter valid end date")
+                return redirect('index')
         if start_date == '':
             start_date = datetime.strptime('1/1/80', '%d/%m/%y').date()
         if end_date == '':
@@ -207,18 +234,18 @@ def index(request):
             messages.info(
                 request, "Please enter valid start date and end date")
 
-        elif country == None:
+        elif country == '':
             with connection.cursor() as cursor:
-                cursor.execute('''SELECT * FROM property WHERE active=true AND country = %s AND (start_available >=%s )
-                AND ( end_available <= %s ) AND userid<>%s''', [
-                    country, start_date, end_date, request.user.username])
+                cursor.execute('''SELECT * FROM property WHERE active=true  AND start_available >=%s
+                AND end_available <= %s  AND userid<>%s''', [
+                    start_date, end_date, request.user.username])
                 property = cursor.fetchall()
+                print('property:', property)
 
         else:
             with connection.cursor() as cursor:
-                cursor.execute('''SELECT * FROM property WHERE active=true AND (start_available >=%s)
-                AND (end_available >=%s )AND userid<>%s''', [
-                    start_date, end_date, request.user.username])
+                cursor.execute('''SELECT * FROM property WHERE active=true AND country = %s AND (start_available >=%s)
+                AND (end_available <=%s )AND userid<>%s''', [country, start_date, end_date, request.user.username])
                 property = cursor.fetchall()
     result_dict = {'records': property, 'pendings': pendings}
     return render(request, 'app/index.html', result_dict)
@@ -383,8 +410,28 @@ def add(request, id):
 @ login_required(login_url='login')
 def exchange(request, id):
     if request.POST:
-        start = datetime.strptime(request.POST['startdate'], '%d/%m/%y').date()
-        end = datetime.strptime(request.POST['enddate'], '%d/%m/%y').date()
+        start = request.POST['startdate']
+        end = request.POST['enddate']
+        if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", start) != None:
+            print('check2')
+            start = datetime.strptime(start, '%d/%m/%y').date()
+            print(start)
+        else:
+            messages.info(
+                request, "Please enter valid start date")
+            redirect_to = '/exchange/'+id
+            return redirect(redirect_to)
+
+        if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", end) != None:
+            print('check2')
+            end = datetime.strptime(end, '%d/%m/%y').date()
+            print(end)
+        else:
+            messages.info(
+                request, "Please enter valid end date")
+            redirect_to = '/exchange/'+id
+            return redirect(redirect_to)
+
         with connection.cursor() as cursor:
             cursor.execute(
                 "SELECT userid FROM property WHERE propertyid = %s", [id])
@@ -396,17 +443,34 @@ def exchange(request, id):
                 "SELECT end_available FROM property WHERE propertyid = %s", [id])
             owner_end = cursor.fetchone()
             # owner_end = datetime.strptime(owner_end, '%d/%m/%y').date()
+
             print(start < owner_end[0], start > owner_start[0],
                   end > owner_start[0], end < owner_end[0])
             # print(owner_end[0], type(owner_end[0]))
+            cursor.execute("SELECT propertyid FROM property WHERE userid = %s", [
+                           request.user.username])
+            prop = cursor.fetchone()
+            if prop == None:
+                messages.info(request, "Please list your property first!")
+                redirect_to = '/exchange/'+id
+                return redirect(redirect_to)
+
             if (not(start <= owner_end[0] and start >= owner_start[0] and end >= owner_start[0] and end <= owner_end[0])):
                 messages.info(
                     request, "The owner is not available on the proposed exchange date")
-            cursor.execute("SELECT propertyid FROM property WHERE userid = %s", [
-                           request.user.username])
-            prop = cursor.fetchall()
-            if prop == None:
-                messages.info("Please list your property first!")
+                redirect_to = '/exchange/'+id
+                return redirect(redirect_to)
+
+            cursor.execute('''SELECT requested_from,requested_to  FROM pending WHERE requested_from = %s AND requested_to 
+            IN(SELECT userid from property WHERE propertyid = %s)''', [
+                           request.user.username, id])
+            exist_pending = cursor.fetchone()
+            if exist_pending != None:
+                print(exist_pending)
+                messages.info(
+                    request, "You already have a pending exchange request with the owner")
+                redirect_to = '/exchange/'+id
+                return redirect(redirect_to)
             else:
                 cursor.execute("INSERT INTO pending VALUES(%s,%s,%s,%s,%s)",
                                [request.user.username, ownerid, id, start, end])
@@ -546,16 +610,16 @@ def myexchange(request, id):
             "SELECT * FROM exchange WHERE status2='Confirmed' AND(userid2 = %s)", [id])
         ongoing2 = cursor.fetchall()
         cursor.execute(
-            "SELECT * FROM exchange WHERE status1='Closed' OR status1='Closed with Complaint' AND(userid1 = %s)", [id])
+            "SELECT * FROM exchange WHERE status1='Closed' OR status1='Closed with Complain' AND(userid1 = %s)", [id])
         closed1 = cursor.fetchall()
         cursor.execute(
-            "SELECT * FROM exchange WHERE status2='Closed' OR status2='Closed with Complaint' AND(userid2 = %s)", [id])
+            "SELECT * FROM exchange WHERE status2='Closed' OR status2='Closed with Complain' AND(userid2 = %s)", [id])
         closed2 = cursor.fetchall()
     if ongoing1 == None and closed1 == None and ongoing2 == None and closed2 == None:
         messages.info(request, "You have no active or past exchanges")
     else:
-        print(ongoing1)
-        print(ongoing2)
+        print('ongoing1:', ongoing1)
+        print('ongoing2:', ongoing2)
         context['ongoing1'] = ongoing1
         context['ongoing2'] = ongoing2
         context['closed1'] = closed1
@@ -591,9 +655,8 @@ def myexchange(request, id):
                 print('done3')
                 return redirect('index')
         reason = request.POST.get("reason")
-        print('reason')
         if reason != None:
-            print(reason)
+            print("reason:", reason)
             caseid = ''.join([choice(ascii_letters) for i in range(16)])
 
             with connection.cursor() as cursor:
@@ -602,6 +665,7 @@ def myexchange(request, id):
                 ex = cursor.fetchone()
                 print('extract:', ex)
                 excom_id = reason[0:16]
+                print('excom_id:', excom_id)
                 if ex[0] == id:
                     print("closed3")
                     complained = ex[1]
@@ -621,6 +685,7 @@ def myexchange(request, id):
                 print(reason[16:], print(complained))
                 cursor.execute("INSERT INTO case_log VALUES(%s,%s,%s,%s,%s)", [
                                caseid, reason[16:], reason[0:16], id, complained])
+                print("inserted into case log")
                 return redirect('index')
     return render(request, 'app/myexchange.html', context)
 

@@ -29,6 +29,7 @@
                 <label for="cars">Complain</label>
                 <select name="reason" id="reason">
                     <optgroup label="Reasons">
+                        <option value=None selected disabled hidden>None</option>
                         <option value="{{ex.0}}lost item">Lost Item</option>
                         <option value="{{ex.0}}vandalism">Vandalism</option>
                         <option value="{{ex.0}}house rules violation">House rules violation</option>
@@ -58,10 +59,10 @@
                 <select name="reason" id="reason">
                     <optgroup label="Reasons">
                         <option value=None selected disabled hidden>None</option>
-                        <option value="{{ex.0}}lost item">Lost Item</option>
-                        <option value="{{ex.0}}vandalism">Vandalism</option>
-                        <option value="{{ex.0}}house rules violation">House rules violation</option>
-                        <option value="{{ex.0}}other">Other</option>
+                        <option value="{{i.0}}lost item">Lost Item</option>
+                        <option value="{{i.0}}vandalism">Vandalism</option>
+                        <option value="{{i.0}}house rules violation">House rules violation</option>
+                        <option value="{{i.0}}other">Other</option>
                     </optgroup>
                 </select>
                 <br><br>
