@@ -10,7 +10,6 @@ from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from numpy import require
 from .models import Category, Photo
 from .forms import CreateUserForm
 from django.contrib.auth import authenticate, login, logout
