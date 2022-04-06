@@ -34,13 +34,15 @@
 </head>
 
 <body>
-
   <div class="container mt-5 bg-light rounded" style="width: 600px;">
     <h1 class="text-center">List your property</h1>
     <a href="/">Back to home</a>
     <p style="color:red">{{ status|safe }}</p>
 
     <div id="ui">
+      {% for message in messages %}
+      <p id="messages">{{message}}</p>
+      {% endfor %}
       <form method="POST" class="row p-2">
         {% csrf_token %}
         <div class="col-md-12 p-2">

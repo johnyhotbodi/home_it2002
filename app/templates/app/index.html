@@ -75,7 +75,7 @@
             <a href="options/{{p.0}}"><button>View exchange options</button></a>
             <form method="post">
                 {% csrf_token %}
-                <button class="button is-danger" name="acceptance" value="Decline">
+                <button class="button is-danger" name="acceptance" value="{{p.0}}*|*{{p.3}}*|*{{p.4}}*|*">
                     Decline
                 </button>
             </form>

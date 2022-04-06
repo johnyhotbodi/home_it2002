@@ -1,9 +1,11 @@
 from asyncio import protocols
+from contextlib import redirect_stderr
 import email
 from email import message
 from pickle import FALSE
 from pickletools import read_uint1
 import re
+from unittest import result
 from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib.auth.forms import UserCreationForm
@@ -14,6 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.http import JsonResponse
 from .decorators import unauthenticated_user, allowed_users, admin_only
 import http.client
 import urllib.parse
@@ -22,6 +25,10 @@ from random import choice
 from datetime import datetime
 from django.db import transaction
 from django.urls import reverse
+import matplotlib.pyplot as plt
+from io import StringIO
+import numpy as np
+
 # Create your views here.
 
 
@@ -125,16 +132,25 @@ def register(request):
 
 @ allowed_users(allowed_roles=['admin'])
 def adminPage(request):
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM property ORDER BY city")
-        property = cursor.fetchall()
-
+    result_dict = {}
     # Delete customer
     if request.POST:
         if request.POST['action'] == 'delete':
             with connection.cursor() as cursor:
                 cursor.execute("DELETE FROM property WHERE propertyid = %s", [
                                request.POST['id']])
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT userid,COUNT(userid) FROM users u, exchange e WHERE u.userid=e.userid1 OR u.userid=e.userid2 GROUP BY userid LIMIT 10 ")
+        bestcust = cursor.fetchall()
+        result_dict['bestcust'] = bestcust
+
+        cursor.execute(
+            "SELECT c1.complain_of_userid,COUNT(c1.complain_of_userid),u.rating FROM case_log c1,users u WHERE u.userid=c1.complain_of_userid GROUP BY (c1.complain_of_userid,u.rating) HAVING COUNT(c1.complain_of_userid)>=ANY(SELECT COUNT(c2.complain_of_userid) FROM case_log c2 GROUP BY c2.complain_of_userid ORDER BY COUNT(c2.complain_of_userid) DESC LIMIT 5)"
+        )
+        worstcust = cursor.fetchall()
+        result_dict['worstcust'] = worstcust
+    '''
     if request.GET:
         query = request.GET.get('search')
         if query == '':
@@ -144,9 +160,68 @@ def adminPage(request):
                 cursor.execute("SELECT * FROM property WHERE country = %s", [
                     query])
                 property = cursor.fetchall()
-    result_dict = {'records': property}
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT SUM(e.revenue) FROM exchange e,property p WHERE p.propertyid=e.propertyid1 OR p.propertyid=e.propertyid2 GROUP BY p.country ORDER BY p.country ASC ")
+        revenue = cursor.fetchall()
+        cursor.execute(
+            "SELECT COUNT(*) FROM users GROUP BY country_code")
+        users = cursor.fetchall()
+        cursor.execute(
+            "SELECT DISTINCT p.country FROM exchange e,property p WHERE p.propertyid=e.propertyid1 OR p.propertyid=e.propertyid2 GROUP BY p.country ORDER BY p.country ASC")
+        country = cursor.fetchall()
+    result_dict = {'revenue': revenue}
+    result_dict['country'] = country
+    result_dict['users'] = users
+    print(result_dict)
+    '''
+    return render(request, 'app/adminPage3.html', result_dict)
 
-    return render(request, 'app/adminPage.html', result_dict)
+
+def aduser(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM users")
+        all_user = cursor.fetchall()
+    result_dict = {'user': all_user}
+    return render(request, 'app/aduser.html', result_dict)
+
+
+def population_chart(request):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT SUM(e.revenue) FROM exchange e,property p WHERE p.propertyid=e.propertyid1 OR p.propertyid=e.propertyid2 GROUP BY p.country ORDER BY p.country ASC ")
+        revenue = cursor.fetchall()
+        cursor.execute(
+            "SELECT COUNT(*) FROM users GROUP BY country_code")
+        users = cursor.fetchall()
+        cursor.execute(
+            "SELECT DISTINCT p.country FROM exchange e,property p WHERE p.propertyid=e.propertyid1 OR p.propertyid=e.propertyid2 GROUP BY p.country ORDER BY p.country ASC")
+        country = cursor.fetchall()
+        users = [i[0] for i in users]
+        rev = [int(i[0]) for i in revenue]
+        print('rev,', rev)
+        jsonres = JsonResponse(data={
+            'users': users,
+            'country': country,
+            'revenue': rev
+        })
+    print(jsonres)
+    return jsonres
+
+
+def property_chart(request):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT p.country,COUNT(p.country) FROM property p,exchange e WHERE p.propertyid=e.propertyid1 OR p.propertyid = e.propertyid2 GROUP BY (p.country)")
+        countries = cursor.fetchall()
+    country = [i[0] for i in countries]
+    count = [i[1] for i in countries]
+    print('count:', count)
+    jsonres = JsonResponse(data={
+        'country': country,
+        'count': count
+    })
+    return jsonres
 
 
 @ unauthenticated_user
@@ -216,7 +291,7 @@ def index(request):
                     request, "Please enter valid start date")
                 return redirect('index')
         if end_date != '':
-            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", start_date) != None:
+            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", end_date) != None:
                 print('check2')
                 end_date = datetime.strptime(end_date, '%d/%m/%y').date()
                 print(start_date)
@@ -234,7 +309,7 @@ def index(request):
             messages.info(
                 request, "Please enter valid start date and end date")
 
-        elif country == '':
+        if country == '':
             with connection.cursor() as cursor:
                 cursor.execute('''SELECT * FROM property WHERE active=true  AND start_available >=%s
                 AND end_available <= %s  AND userid<>%s''', [
@@ -248,6 +323,31 @@ def index(request):
                 AND (end_available <=%s )AND userid<>%s''', [country, start_date, end_date, request.user.username])
                 property = cursor.fetchall()
     result_dict = {'records': property, 'pendings': pendings}
+
+    if request.POST:
+        value = request.POST.get("acceptance")
+        print(value)
+        res = re.findall('\w+(?=.*[*|*])', value)
+        res_from = res[0]
+        start_from = res[1]+"/"+res[2]+"/"+res[3]
+        end_from = res[4]+"/"+res[5]+"/"+res[6]
+        print(res[1])
+        print(re.search(r"\.", res[1]))
+        try:
+            start_from = datetime.strptime(start_from, '%b/%d/%Y').date()
+        except:
+            start_from = datetime.strptime(start_from, '%B/%d/%Y').date()
+        print(start_from)
+        try:
+            end_from = datetime.strptime(end_from, '%b/%d/%Y').date()
+        except:
+            end_from = datetime.strptime(end_from, '%B/%d/%Y').date()
+        print(end_from)
+        print(res_from)
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM pending WHERE requested_to = %s AND requested_from = %s AND start_date = %s AND end_date =%s", [
+                           request.user.username, res_from, start_from, end_from])
+            return redirect('index')
     return render(request, 'app/index.html', result_dict)
 
 # Create your views here.
@@ -343,42 +443,59 @@ def add(request, id):
         propertyid = propertyid.replace(" ", "")
         # Check if propertyid is already in the table
         address_post = request.POST['address']
-        try:
-            start_date = datetime.strptime(
-                request.POST['startdate'], '%d/%m/%y').date()
-            end_date = datetime.strptime(
-                request.POST['enddate'], '%d/%m/%y').date()
-        except:
-            messages.info(request, "Please enter your date in dd/mm/yy")
-            start_date = datetime.strptime(
-                request.POST['startdate'], '%d/%m/%y').date()
-            end_date = datetime.strptime(
-                request.POST['enddate'], '%d/%m/%y').date()
-        finally:
-            if start_date > end_date:
-                messages.info(request, 'Please enter valid start and end date')
-            else:
-                with connection.cursor() as cursor:
-                    print('insert')
-                    cursor.execute(
-                        "SELECT * FROM property WHERE address = %s", [address_post])
-                    flag = cursor.fetchone()
-                    house = request.POST.get("housetype")
-                    if flag == None:
-                        print('inserting')
-                        print(house)
-                        cursor.execute('''INSERT INTO property(propertyid, address,city,country,house_type,number_of_bedrooms,
-                        number_of_guests_allowed,start_available,end_available,house_rules,amenities,userid)
-                            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
-                                       [propertyid, request.POST['address'], request.POST['city'], request.POST['country'],
-                                        house, request.POST['bedrooms'], request.POST['guest'], start_date,
-                                        end_date, request.POST['rules'], request.POST['amenities'], id])
-                        messages.info(
-                            request, 'Your property is successfully listed!')
-                        return redirect('index')
-                    else:
-                        messages.info(
-                            request, 'This property is already listed :(')
+        # Check if property is valid
+        conn = http.client.HTTPConnection('api.positionstack.com')
+        params = urllib.parse.urlencode({
+            'access_key': '13313c42d97f227972d164fce0a81f4f',
+            'query': address_post,
+            'region': request.POST['city'],
+            'limit': 1,
+        })
+
+        conn.request('GET', '/v1/forward?{}'.format(params))
+        res = conn.getresponse()
+        data = res.read()
+        res = data.decode('utf-8')
+        print('received_address:', res[2:7])
+        redirect_to = '/add/'+id
+        if res[2:7] == 'error':
+            messages.info(request, "Please enter a valid address")
+            return redirect(redirect_to)
+
+        start_date = request.POST['startdate']
+        end_date = request.POST['enddate']
+        if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", start_date) == None:
+            messages.info(request, "Please enter your start date in dd/mm/yy")
+            return redirect(redirect_to)
+
+        if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", end_date) == None:
+            messages.info(request, "Please enter your end date in dd/mm/yy")
+            return redirect(redirect_to)
+
+        if start_date > end_date:
+            messages.info(request, 'Please enter valid start and end date')
+        else:
+            with connection.cursor() as cursor:
+                print('insert')
+                cursor.execute(
+                    "SELECT * FROM property WHERE address = %s", [address_post])
+                flag = cursor.fetchone()
+                house = request.POST.get("housetype")
+                if flag == None:
+                    print('inserting')
+                    print(house)
+                    cursor.execute('''INSERT INTO property(propertyid, address,city,country,house_type,number_of_bedrooms,
+                    number_of_guests_allowed,start_available,end_available,house_rules,amenities,userid)
+                        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+                                   [propertyid, request.POST['address'], request.POST['city'], request.POST['country'],
+                                    house, request.POST['bedrooms'], request.POST['guest'], start_date,
+                                    end_date, request.POST['rules'], request.POST['amenities'], id])
+                    messages.info(
+                        request, 'Your property is successfully listed!')
+                    return redirect('index')
+                else:
+                    messages.info(
+                        request, 'This property is already listed :(')
 
         '''
         if start_date and end_date:
@@ -461,7 +578,7 @@ def exchange(request, id):
                 redirect_to = '/exchange/'+id
                 return redirect(redirect_to)
 
-            cursor.execute('''SELECT requested_from,requested_to  FROM pending WHERE requested_from = %s AND requested_to 
+            cursor.execute('''SELECT requested_from,requested_to  FROM pending WHERE requested_from = %s AND requested_to
             IN(SELECT userid from property WHERE propertyid = %s)''', [
                            request.user.username, id])
             exist_pending = cursor.fetchone()
@@ -572,12 +689,20 @@ def options(request, id):
     print(id)
     context = {}
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM property WHERE userid = %s", [id])
+        cursor.execute(
+            "SELECT start_date,end_date  FROM pending WHERE requested_from = %s AND requested_to = %s", [id, request.user.username])
+        dates = cursor.fetchone()
+        start_date = dates[0]
+        end_date = dates[1]
+        print(start_date, end_date)
+        cursor.execute(
+            "SELECT * FROM property WHERE userid = %s AND (%s BETWEEN start_available AND end_available) AND (%s BETWEEN start_available AND end_available) ", [id, start_date, end_date])
         record = cursor.fetchall()
     context["records"] = record
     context['name'] = id
     if request.POST:
         chosen_id = request.POST.get("acceptance")
+        print('working')
         exchangeid = ''.join([choice(ascii_letters) for i in range(16)])
         with connection.cursor() as cursor:
             cursor.execute(
@@ -596,7 +721,7 @@ def options(request, id):
                            res[2], chosen_id])
             messages.info(request, "Your exchange has been activated")
         return redirect('index')
-    return render(request, "app/options.html", context)
+    return render(request, "app/tryoptions2.html", context)
 
 
 @ login_required(login_url='login')
@@ -609,6 +734,7 @@ def myexchange(request, id):
         cursor.execute(
             "SELECT * FROM exchange WHERE status2='Confirmed' AND(userid2 = %s)", [id])
         ongoing2 = cursor.fetchall()
+
         cursor.execute(
             "SELECT * FROM exchange WHERE status1='Closed' OR status1='Closed with Complain' AND(userid1 = %s)", [id])
         closed1 = cursor.fetchall()
@@ -642,16 +768,19 @@ def myexchange(request, id):
                     print('closed1')
                     cursor.execute(
                         "UPDATE exchange SET status1='Closed',deposit_refunded='true'  WHERE exchangeid = %s", [ex_id])
-                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN 
+                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN
                     (SELECT propertyid1 FROM exchange WHERE exchangeid = %s )''', [ex_id])
+
                 if user2[0] == request.user.username:
                     print('closed 2')
                     cursor.execute(
                         "UPDATE exchange SET status2='Closed',deposit_refunded='true'  WHERE exchangeid = %s", [ex_id])
-                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN 
+                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN
                     (SELECT propertyid2 FROM exchange WHERE exchangeid = %s )''', [ex_id])
                 cursor.execute(
                     "UPDATE users SET rating=rating+1, wallet=wallet+450 WHERE userid = %s", [request.user.username])
+                messages.info(
+                    request, "Your exchange has ended successfully, you have received +450 deposit and rating +1. Hope you enjoyed your homexchange")
                 print('done3')
                 return redirect('index')
         reason = request.POST.get("reason")
@@ -672,7 +801,7 @@ def myexchange(request, id):
                     print(excom_id)
                     cursor.execute(
                         "UPDATE exchange SET status1='Closed with Complain', deposit_refunded='true'  WHERE exchangeid = %s", [excom_id])
-                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN 
+                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN
                     (SELECT propertyid1 FROM exchange WHERE exchangeid = %s )''', [excom_id])
                     print("closed3.1")
                 else:
@@ -680,12 +809,16 @@ def myexchange(request, id):
                     complained = ex[0]
                     cursor.execute(
                         "UPDATE exchange SET status2='Closed with Complain', deposit_refunded='true'  WHERE exchangeid = %s", [excom_id])
-                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN 
+                    cursor.execute('''UPDATE property SET active='true' WHERE propertyid IN
                     (SELECT propertyid2 FROM exchange WHERE exchangeid = %s )''', [excom_id])
                 print(reason[16:], print(complained))
+                cursor.execute(
+                    "UPDATE users SET rating=rating+1, wallet=wallet+450 WHERE userid = %s", [request.user.username])
                 cursor.execute("INSERT INTO case_log VALUES(%s,%s,%s,%s,%s)", [
                                caseid, reason[16:], reason[0:16], id, complained])
                 print("inserted into case log")
+                messages.info(
+                    request, "We are so sorry to hear about your complain. We have made a compensation to your homexchange wallet :(")
                 return redirect('index')
     return render(request, 'app/myexchange.html', context)
 

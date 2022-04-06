@@ -37,5 +37,8 @@ urlpatterns = [
     #path('view/locate/<str:id>', app.views.locate, name='locate')
     path('edit/<str:id>', app.views.edit, name='edit'),
     path('view/addimage/<str:id>', app.views.addimage, name='addimage'),
+    path('population-chart/', app.views.population_chart, name='population-chart'),
+    path('property-chart/', app.views.property_chart, name='property-chart'),
+    path('aduser', app.views.aduser, name='aduser')
     # path('locate/<str:id>',app.views.locate,name='locate'),
 ]
