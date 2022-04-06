@@ -1,9 +1,3 @@
-# Bootstrap 5 Admin Dashbaord Template
-
-# 👉 Subscribe to My Channel [💙❤️Youtube❤️💙](https://www.youtube.com/channel/UCpOHt5d6GG-mvo-_pU06rhQ?sub_confirmation=1)
-
----
-
 ## List of Components used in this Tutorial
 
 | Component Name  |                                          Docs                                          |
@@ -16,13 +10,3 @@
 | Bootstrap Icons |             [Bootstrap Icons Docs](https://icons.getbootstrap.com/#icons)              |
 | Chart.js        |          [Chart.js Docs](https://www.chartjs.org/docs/latest/charts/bar.html)          |
 | DataTables      |                       [DataTables Docs](https://datatables.net/)                       |
-
----
-
-# [🚀 Live Here](https://frontendfunn.github.io/bootstrap-5-admin-dashboard-template/)
-
----
-
-![preview](images/preview.PNG)
-
-### Made with ❤️ - by [FrontEndFunn](https://www.youtube.com/channel/UCpOHt5d6GG-mvo-_pU06rhQ?sub_confirmation=1)
