@@ -39,6 +39,11 @@ urlpatterns = [
     path('view/addimage/<str:id>', app.views.addimage, name='addimage'),
     path('population-chart/', app.views.population_chart, name='population-chart'),
     path('property-chart/', app.views.property_chart, name='property-chart'),
-    path('aduser', app.views.aduser, name='aduser')
+    path('aduser', app.views.aduser, name='aduser'),
+    path('adviewproperty/<str:id>',
+         app.views.adviewproperty, name='adviewproperty'),
+    path('adproperty', app.views.adproperty, name='adproperty'),
+    path('adcase', app.views.adcase, name='adcase'),
+    path('adexchange', app.views.adexchange, name='adexchange')
     # path('locate/<str:id>',app.views.locate,name='locate'),
 ]

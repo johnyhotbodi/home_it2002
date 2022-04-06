@@ -1,0 +1,51 @@
+<html>
+<a href="/adminPage">Back</a>
+<h2>All properties</h2>
+<h3>Filter criteria</h3>
+{% csrf_token %}
+<form class="add_your_class" method="GET" action="">
+    <input class="add_your_class" type="search" name="country" placeholder="Country">
+    <input class="add_your_class" type="search" name="startdate" placeholder="Start date">
+    <input class="add_your_class" type="search" name="enddate" placeholder="End date">
+    <input class="add_your_class" type="search" name="status1" placeholder="Status1">
+    <input class="add_your_class" type="search" name="status2" placeholder="Status2">
+    <button class="add_your_class" type="submit"> Search </button>
+</form>
+
+<body>
+    <table border=1>
+        <thead>
+            <th> Exchange ID </th>
+            <th> Country </th>
+            <th> Userid 1</th>
+            <th> Userid2</th>
+            <th>Propertyid1</th>
+            <th>Propertyid2</th>
+            <th>Start date</th>
+            <th>End date</th>
+            <th> deposit refunded</th>
+            <th> revenue</th>
+            <th>status1</th>
+            <th>status2</th>
+        </thead>
+        {% for e in ex %}
+        <tr>
+            <td> {{ e.0 }} </td>
+            <td> {{ e.1 }} </td>
+            <td> {{ e.2 }} </td>
+            <td> {{ e.3 }} </td>
+            <td> {{ e.4 }} </td>
+            <td> {{ e.5 }} </td>
+            <td> {{ e.6 }} </td>
+            <td> {{ e.7 }} </td>
+            <td> {{ e.8 }} </td>
+            <td> {{ e.9 }} </td>
+            <td> {{ e.10 }} </td>
+            <td> {{ e.11 }} </td>
+            <td> {{ e.12 }} </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

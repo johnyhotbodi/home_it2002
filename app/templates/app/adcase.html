@@ -1,0 +1,34 @@
+<html>
+<a href="/adminPage">Back</a>
+<h2>All properties</h2>
+<h3>Filter criteria</h3>
+{% csrf_token %}
+<form class="add_your_class" method="GET" action="">
+    <input class="add_your_class" type="search" name="reasons" placeholder="Reasons">
+    <input class="add_your_class" type="search" name="complain by" placeholder="Complain by">
+    <input class="add_your_class" type="search" name="complained" placeholder="Complained">
+    <button class="add_your_class" type="submit"> Search </button>
+</form>
+
+<body>
+    <table border=1>
+        <thead>
+            <th> Case ID </th>
+            <th>Reasons</th>
+            <th>Exchange id</th>
+            <th>complain by</th>
+            <th>complained</th>
+        </thead>
+        {% for case in cases %}
+        <tr>
+            <td> {{ case.0 }} </td>
+            <td> {{ case.1 }} </td>
+            <td> {{ case.2 }} </td>
+            <td> {{ case.3 }} </td>
+            <td> {{ case.4 }} </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

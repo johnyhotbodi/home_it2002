@@ -1,0 +1,45 @@
+<html>
+<a href="/aduser">Back</a>
+<h2>Property of {{ userid }}</h2>
+
+<body>
+    <table border=1>
+        <thead>
+            <th> City </th>
+            <th>Country</th>
+            <th>Address</th>
+            <th>House type</th>
+            <th>Bedrooms</th>
+            <th>Accomodates</th>
+            <th>Date available(start) </th>
+            <th>Date available(end) </th>
+            <th>House rules</th>
+            <th>Amenities</th>
+            <th> Active</th>
+        </thead>
+        {% for house in houses %}
+        <tr>
+            <td> {{ house.2 }} </td>
+            <td> {{ house.3 }} </td>
+            <td> {{ house.1 }} </td>
+            <td> {{ house.6 }} </td>
+            <td> {{ house.7 }} </td>
+            <td> {{ house.8 }} </td>
+            <td> {{ house.9 }} </td>
+            <td> {{ house.10 }} </td>
+            <td> {{ house.11 }} </td>
+            <td> {{ house.12 }} </td>
+            <td> {{ house.14 }}</td>
+            <form method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{house.0}}" />
+                <button onclick="return confirm('Are you sure you want to delete this property?');" type="submit"
+                    name="action" value="delete">Delete</button>
+            </form>|
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from numpy import require
 from .models import Category, Photo
 from .forms import CreateUserForm
 from django.contrib.auth import authenticate, login, logout
@@ -146,6 +147,18 @@ def adminPage(request):
         )
         worstcust = cursor.fetchall()
         result_dict['worstcust'] = worstcust
+
+        cursor.execute(
+            "SELECT u.userid FROM users u WHERE u.userid NOT IN (SELECT c1.complain_of_userid FROM case_log c1)"
+        )
+        nocomp = cursor.fetchall()
+        result_dict['nocomp'] = nocomp
+
+        cursor.execute(
+            'SELECT u.userid FROM users u WHERE NOT EXISTS(SELECT ex.userid1 FROM exchange ex WHERE ex.userid1=u.userid OR ex.userid2=u.userid) LIMIT 10'
+        )
+        noex = cursor.fetchall()
+        result_dict['noex'] = noex
     '''
     if request.GET:
         query = request.GET.get('search')
@@ -178,8 +191,168 @@ def aduser(request):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM users")
         all_user = cursor.fetchall()
+    if request.POST:
+        if request.POST['action'] == 'delete':
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM users WHERE userid = %s", [
+                               request.POST['id']])
+                return redirect('aduser')
     result_dict = {'user': all_user}
     return render(request, 'app/aduser.html', result_dict)
+
+
+def adviewproperty(request, id):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM property WHERE userid = %s", [id])
+        houses = cursor.fetchall()
+    result_dict = {'houses': houses}
+    result_dict['userid'] = id
+    if request.POST:
+        if request.POST['action'] == 'delete':
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE property SET active=true WHERE propertyid IN(SELECT propertyid1 FROM exchange WHERE propertyid2 = %s)", [
+                               request.POST['id']])
+                cursor.execute("UPDATE property SET active=true WHERE propertyid IN(SELECT propertyid2 FROM exchange WHERE propertyid1 = %s)", [
+                               request.POST['id']])
+                cursor.execute("DELETE FROM  property WHERE propertyid = %s", [
+                               request.POST['id']])
+                redirect_to = '/adviewproperty/'+id
+                return redirect(redirect_to)
+
+    return render(request, 'app/adviewproperty.html', result_dict)
+
+
+def adproperty(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM property")
+        houses = cursor.fetchall()
+
+    if request.GET:
+        country = request.GET.get('country')
+        start_date = request.GET.get('startdate')
+        end_date = request.GET.get('enddate')
+        print('first:', start_date, end_date)
+
+        if start_date != '':
+            print('check')
+            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", start_date) != None:
+                print('check2')
+                start_date = datetime.strptime(start_date, '%d/%m/%y').date()
+                print(start_date)
+            else:
+                messages.info(
+                    request, "Please enter valid start date")
+                return redirect('index')
+        if end_date != '':
+            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", end_date) != None:
+                print('check2')
+                end_date = datetime.strptime(end_date, '%d/%m/%y').date()
+                print(start_date)
+            else:
+                messages.info(
+                    request, "Please enter valid end date")
+                return redirect('index')
+        if start_date == '':
+            start_date = datetime.strptime('1/1/80', '%d/%m/%y').date()
+        if end_date == '':
+            end_date = datetime.strptime('31/12/50', '%d/%m/%y').date()
+        print("second", start_date, end_date)
+        if start_date > end_date:
+            property = property
+            messages.info(
+                request, "Please enter valid start date and end date")
+
+        if country == '':
+            with connection.cursor() as cursor:
+                cursor.execute('''SELECT * FROM property WHERE  start_available >=%s
+                AND end_available <= %s ''', [
+                    start_date, end_date])
+                houses = cursor.fetchall()
+
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute('''SELECT * FROM property WHERE active=true AND country = %s AND (start_available >=%s)
+                AND (end_available <=%s )''', [country, start_date, end_date])
+                houses = cursor.fetchall()
+    result_dict = {'houses': houses}
+    if request.POST:
+        if request.POST['action'] == 'delete':
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE property SET active=true WHERE propertyid IN(SELECT propertyid1 FROM exchange WHERE propertyid2 = %s)", [
+                               request.POST['id']])
+                cursor.execute("UPDATE property SET active=true WHERE propertyid IN(SELECT propertyid2 FROM exchange WHERE propertyid1 = %s)", [
+                               request.POST['id']])
+                cursor.execute("DELETE FROM  property WHERE propertyid = %s", [
+                               request.POST['id']])
+                return redirect(adproperty)
+    return render(request, 'app/adproperty.html', result_dict)
+
+
+def adcase(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM case_log")
+        cases = cursor.fetchall()
+    if request.GET:
+        reason = request.GET.get('reasons')
+        comp_by = request.GET.get('complain by')
+        comp = request.GET.get('complained')
+        if reason == '' and comp_by == '' and comp == '':
+            cases = cases
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM case_log WHERE (reasons = %s or %s='') AND (complain_by_userid = %s OR %s='') AND (complain_of_userid = %s or %s='')", [
+                               reason, reason, comp_by, comp_by, comp, comp])
+                cases = cursor.fetchall()
+    result_dict = {'cases': cases}
+    return render(request, 'app/adcase.html', result_dict)
+
+
+def adexchange(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM exchange")
+        ex = cursor.fetchall()
+    if request.GET:
+        country = request.GET.get('country')
+        start_date = request.GET.get('startdate')
+        end_date = request.GET.get('enddate')
+        status1 = request.GET.get('status1')
+        status2 = request.GET.get('status2')
+        if start_date != '':
+            print('check')
+            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", start_date) != None:
+                print('check2')
+                start_date = datetime.strptime(start_date, '%d/%m/%y').date()
+                print(start_date)
+            else:
+                messages.info(
+                    request, "Please enter valid start date")
+                return redirect('adexchange')
+        if end_date != '':
+            if re.search("^(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[0-2])/\d\d$", end_date) != None:
+                print('check2')
+                end_date = datetime.strptime(end_date, '%d/%m/%y').date()
+                print(start_date)
+            else:
+                messages.info(
+                    request, "Please enter valid end date")
+                return redirect('adexchange')
+        if start_date == '':
+            start_date = datetime.strptime('1/1/80', '%d/%m/%y').date()
+        if end_date == '':
+            end_date = datetime.strptime('31/12/50', '%d/%m/%y').date()
+        if start_date > end_date:
+            ex = ex
+            messages.info(
+                request, "Please enter valid start date and end date")
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute('''SELECT c.exchangeid,p.country, c.userid1,c.userid2,c.propertyid1,c.propertyid2,c.start,c.ends,deposit_refunded,revenue,c.status1,c.status2
+                 FROM exchange c,property p  WHERE
+                (c.propertyid1=p.propertyid or c.propertyid2=p.propertyid) AND (p.country=%s OR %s='') AND (c.start>=%s) AND (c.ends<=%s) AND (status1=%s OR %s='')AND(status2=%s OR %s='') ''',
+                               [country, country, start_date, end_date, status1, status1, status2, status2])
+                ex = cursor.fetchall()
+    result_dict = {'ex': ex}
+    return render(request, 'app/adexchange.html', result_dict)
 
 
 def population_chart(request):
@@ -254,6 +427,9 @@ def logoutUser(request):
 def index(request):
     """Shows the main page"""
     # Use raw query to get all objects
+    if request.user.groups.filter(name='admin').exists():
+        print('admin')
+        return redirect('adminPage')
     with connection.cursor() as cursor:
         cursor.execute(
             "SELECT * FROM property WHERE userid <> %s AND active=true ORDER BY country", [request.user.username])
@@ -375,15 +551,17 @@ def view(request, id):
     res = conn.getresponse()
     data = res.read()
     res = data.decode('utf-8')
-    print(res)
-    lat = float(res[21:29])
-    long = float(res[42:52])
+    lat = ''
+    long = ''
+    if len(res) > 12:
+        lat = float(res[21:29])
+        long = float(res[42:51])
 
-    with connection.cursor() as cursor:
-        cursor.execute(
-            "UPDATE property SET latitude=%s WHERE propertyid = %s", [lat, id])
-        cursor.execute(
-            "UPDATE property SET longitute=%s WHERE propertyid = %s", [long, id])
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE property SET latitude=%s WHERE propertyid = %s", [lat, id])
+            cursor.execute(
+                "UPDATE property SET longitute=%s WHERE propertyid = %s", [long, id])
     # need handle exceptions
     '''
     if Photo.objects.filter(user_id=int(user_id[0])).exists():

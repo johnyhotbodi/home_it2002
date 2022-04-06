@@ -18,8 +18,11 @@
 
     <title>Sum of revenue of each country</title>
 </head>
-
-<a href="aduser"><button>View users</button></a>|
+<a href="logout"> logout</a>
+<a href="aduser"><button>View users</button></a>
+<a href="adproperty"><button>View property</button></a>
+<a href="adcase"><button>View case log</button></a>
+<a href="adexchange"><button>View exchanges</button></a>
 
 <div id="container" style="width: 75%;">
     <canvas id="population-chart" data-url="{% url 'population-chart' %}"></canvas>
@@ -140,6 +143,30 @@
         <td> {{ w.0}} </td>
         <td> {{ w.1 }} </td>
         <td> {{ w.2 }} </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3> Never been complained users</h3>
+<table border=1>
+    <thead>
+        <th> Userid </th>
+    </thead>
+    {% for n in nocomp %}
+    <tr>
+        <td> {{ n.0}} </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3> Never exchanged users</h3>
+<table border=1>
+    <thead>
+        <th> Userid </th>
+    </thead>
+    {% for n in noex %}
+    <tr>
+        <td> {{ n.0}} </td>
     </tr>
     {% endfor %}
 </table>
