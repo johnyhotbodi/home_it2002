@@ -25,10 +25,6 @@ from random import choice
 from datetime import datetime
 from django.db import transaction
 from django.urls import reverse
-import matplotlib.pyplot as plt
-from io import StringIO
-import numpy as np
-
 # Create your views here.
 
 
