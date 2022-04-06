@@ -11,11 +11,29 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-  <title>Options</title>
+  <title>Exchange</title>
+
+  <style type="text/css">
+    body {
+      background-image: url('/static/app/images/cow.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      opacity: 0.9;
+    }
+
+    #ui {
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #ui label {
+      font-size: 15px;
+    }
+  </style>
 </head>
 
 <body>
-
   <nav class="navbar sticky-top navbar-expand-sm navbar-light" style="background-color: #e3f2fd;">
     <div class="container">
       <a href="/" class="navbar-brand mb-0 h1">
@@ -56,74 +74,32 @@
     </div>
   </nav>
 
+  <div class="container mt-5 bg-light rounded" style="width: 600px;">
+    <h1 class="text-center">Exchange Details</h1>
+    <a href="/" class="btn btn-primary btn-sm mt-4 mb-2">Back to Home</a>
+    {% for message in messages %}
+    <p id="messages" style="color:red">{{message}}</p>
+    {% endfor %}
 
-  <div class="container my-5 mb-5 bg-light rounded" style="width: 1200px;">
-    <div class="shadow-4 rounded-5 overflow-hidden">
-      <h2>Properties of {{name}}</h2>
-      <table class="table align-middle mb-0 bg-white">
-        <thead class="bg-light">
-          <tr>
-            <th style="width: 20%">Address</th>
-            <th style="width: 10%">House Type</th>
-            <th style="width: 25%">Property details</th>
-            <th class="text-center" style="width: 13%">Available Dates </th>
-            <th style="width: 10%">Remarks</th>
-            <th class="text-center" style="width: 10%">View</th>
-            <th class="text-center" style="width: 9.00%"></th>
-          </tr>
-        </thead>
-        {% for property in records %}
-        <tbody>
-          <tr>
-            <td>
-              <div class="d-flex align-items-center">
-                <div class="ms-3">
-                  <p class="fw-bold mb-1">{{ property.1 }}</p>
-                  <p class="text-muted mb-0">{{ property.2 }}</p>
-                  <p class="text-muted mb-0">{{ property.3 }}</p>
-                </div>
-              </div>
-            </td>
-            <td>
-              <p class="mb-0">{{ property.6 }}</p>
-            </td>
-            <td>
-              <p class="mb-0">{{ property.7 }} Bedrooms</p>
-              <p class="mb-0">max of {{ property.8 }} Guests allowed</p>
-              <p class="mb-0">{{ property.12 }}</p>
-            </td>
-            <td>
-              <p class="text-muted text-center mb-0">Start from</p>
-              <p class="text-center fw-bold mb-0">{{ property.9 }}</p>
-              <p class="text-muted text-center mb-0">until</p>
-              <p class="text-center fw-bold mb-0">{{ property.10 }}</p>
-            </td>
-            <td>{{ property.11 }}</td>
-            <td>
-              <a href="/view/{{property.0}}">
-                <div class="col text-center">
-                  <button type="button" class="btn btn-outline-primary">
-                    View
-                  </button>
-                </div>
-              </a>
-            </td>
-            <td>
-              <form method="post">
-                {% csrf_token %}
-                <div class="col text-center">
-                  <button class="btn btn-outline-primary" name="acceptance" value="{{property.0}}">
-                    I want this!
-                  </button>
-                </div>
-              </form>
-            </td>
-          </tr>
-        </tbody>
-        {% endfor %}
-      </table>
+    <p style="color:red">{{ status|safe }}</p>
+
+    <div id="ui">
+      <form method="POST" class="row p-2">{% csrf_token %}
+        <div class="col-md-6 p-2">
+          <label for="startdate" class="form-label">Start Date<span class="asteriskField">*</span></label>
+          <input type="text" name="startdate" class="form-control" id="startdate" placeholder="dd/mm/yy" required>
+        </div>
+        <div class="col-md-6 p-2">
+          <label for="enddate" class="form-label">End Date<span class="asteriskField">*</span></label>
+          <input type="text" name="enddate" class="form-control" id="enddate" placeholder="dd/mm/yy" required>
+        </div>
+        <div class="col-md-12 p-2">
+          <button class="btn btn-primary" type="submit" value="Add">Submit exchange request!</button>
+        </div>
+      </form>
     </div>
   </div>
+
 
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -135,6 +111,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
     integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
     crossorigin="anonymous"></script>
+
+
 </body>
 
 </html>

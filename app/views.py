@@ -449,7 +449,7 @@ def index(request):
         country = request.GET.get('country')
         start_date = request.GET.get('startdate')
         end_date = request.GET.get('enddate')
-        print('first:', start_date, end_date)
+        print('country:', country)
 
         if start_date != '':
             print('check')
@@ -480,7 +480,7 @@ def index(request):
             messages.info(
                 request, "Please enter valid start date and end date")
 
-        if country == '':
+        if country == 'Select country':
             with connection.cursor() as cursor:
                 cursor.execute('''SELECT * FROM property WHERE active=true  AND start_available >=%s
                 AND end_available <= %s  AND userid<>%s''', [
@@ -499,6 +499,7 @@ def index(request):
         value = request.POST.get("acceptance")
         print(value)
         res = re.findall('\w+(?=.*[*|*])', value)
+        print(res)
         res_from = res[0]
         start_from = res[1]+"/"+res[2]+"/"+res[3]
         end_from = res[4]+"/"+res[5]+"/"+res[6]
@@ -519,7 +520,7 @@ def index(request):
             cursor.execute("DELETE FROM pending WHERE requested_to = %s AND requested_from = %s AND start_date = %s AND end_date =%s", [
                            request.user.username, res_from, start_from, end_from])
             return redirect('index')
-    return render(request, 'app/index.html', result_dict)
+    return render(request, 'app/tryindex.html', result_dict)
 
 # Create your views here.
 
@@ -567,10 +568,11 @@ def view(request, id):
         result_dict = {'user': user, 'property': property,
                        'lat': lat, 'long': long, 'pictures': Photo.objects.filter(user_id=int(user_id[0]))}
     '''
+    username = request.user.username
     result_dict = {'user': user, 'property': property,
-                   'lat': lat, 'long': long}
+                   'lat': lat, 'long': long, 'username': username}
     print(result_dict)
-    return render(request, 'app/view.html', result_dict)
+    return render(request, 'app/tryview.html', result_dict)
 
 # Create your views here.
 
@@ -766,7 +768,7 @@ def exchange(request, id):
                                [request.user.username, ownerid, id, start, end])
                 messages.info(
                     request, "Exchange request submitted!")
-    return render(request, 'app/exchange.html')
+    return render(request, 'app/tryexchange.html')
 
 
 def locate(request, id):
@@ -800,7 +802,7 @@ def edit(request, id):
     if active == 'false':
         messages.info(request,
                       "Your property is booked currently, you can't change the details now")
-        return redirect("app/manage.html")
+        return redirect("app/trymanage.html")
 
     context["obj"] = obj
     if request.POST:
@@ -811,20 +813,26 @@ def edit(request, id):
             end_date = datetime.strptime(
                 request.POST['enddate'], '%d/%m/%y').date()
             print(end_date)
+        except:
+            messages.info(request, "Please enter a valid date format")
+            redirect_to = '/edit/' + request.user.username
+            return redirect(redirect_to)
+        else:
             if start_date > end_date:
                 messages.info(
                     request, 'Please enter a valid start and end date')
             else:
                 with connection.cursor() as cursor:
-                    print("haha")
+                    print("hihi")
                     cursor.execute("UPDATE property SET number_of_bedrooms= %s, number_of_guests_allowed = %s, start_available= %s, end_available= %s , house_rules= %s ,amenities = %s WHERE propertyid = %s;", [
-                        request.POST['bedrooms'], request.POST['accomodate'], start_date, end_date, request.POST['rules'], request.POST['amenities'], id])
-                    transaction.commit()
-                    messages.info(request, "Property edited successfully!")
-        except:
-            messages.info(request, "Please enter a valid date format")
-
-    return render(request, "app/edit.html", context)
+                        request.POST['bedrooms'], request.POST['guest'], start_date, end_date, request.POST['rules'], request.POST['amenities'], id])
+                    # transaction.commit()
+                messages.info(request, "Property edited successfully!")
+                redirect_to = '/manage/' + request.user.username
+                print(redirect_to)
+                return redirect(redirect_to)
+    context['user'] = request.user.username
+    return render(request, "app/tryedit.html", context)
 
 
 @ login_required(login_url='login')
@@ -845,16 +853,22 @@ def manage(request, id):
     if request.POST:
         if request.POST.get("action"):
             if request.POST['action'] == 'delete':
+                print("hehe")
                 with connection.cursor() as cursor:
+                    print(request.POST['action'])
                     cursor.execute("DELETE FROM property WHERE propertyid = %s", [
                         request.POST['delete']])
                     print('deleted')
+                    redirect_to = '/manage/' + request.user.username
                     messages.info(request, "Your property is delisted")
+                    return redirect(redirect_to)
+
     # save the data from the form
 
     context["obj"] = obj
+    context['user'] = request.user.username
 
-    return render(request, "app/manage.html", context)
+    return render(request, "app/trymanage.html", context)
 
 
 @ login_required(login_url='login')
@@ -873,6 +887,7 @@ def options(request, id):
         record = cursor.fetchall()
     context["records"] = record
     context['name'] = id
+    context['user'] = request.user.username
     if request.POST:
         chosen_id = request.POST.get("acceptance")
         print('working')
@@ -1017,7 +1032,7 @@ def profile(request, id):
                 messages.info(
                     request, "This contact number is already linked to another user")
                 print('hehe')
-            elif ((code == '+65' or code == '+66') and len(number) != 8) or (code == '+60' and (len(number) != 9 or len(number) != 10)):
+            elif ((code == '+65' or code == '+66') and len(number) != 8) or (code == '+60' and (len(number) != 9 and len(number) != 10)):
                 messages.info(request, "Please enter a valid contact number")
                 print('hoho')
             else:
@@ -1029,7 +1044,7 @@ def profile(request, id):
         user = cursor.fetchone()
     context['user'] = user
 
-    return render(request, 'app/profile.html', context)
+    return render(request, 'app/tryprofile.html', context)
 
 
 @ login_required(login_url='login')

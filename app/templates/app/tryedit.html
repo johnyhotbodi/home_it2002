@@ -1,0 +1,134 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+  <title>Edit Property</title>
+  <style type="text/css">
+    body {
+      background-image: url('/static/app/images/cow.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      opacity: 0.9;
+    }
+
+    #ui {
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #ui label {
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar sticky-top navbar-expand-sm navbar-light" style="background-color: #e3f2fd;">
+    <div class="container">
+      <a href="/" class="navbar-brand mb-0 h1">
+        <img class="d-inline-block align-top" src="{% static 'app/images/logo.png' %}" width="30" height="30" />
+        Home XChange
+      </a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a href="/../profile/{{user}}" class="nav-link active">
+              My profile
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a href="/../manage/{{user}}" class="nav-link active">
+              My Properties
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a href="/../add/{{user}}" class="nav-link active">
+              List new property!
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a href="/../myexchange/{{user}}" class="nav-link active">
+              My exchanges
+            </a>
+          </li>
+        </ul>
+      </div>
+      <a href="/../logout" class="btn btn btn-primary btn-md" role="button" aria-pressed="true">logout
+      </a>
+    </div>
+  </nav>
+  <div class="container mt-5 bg-light rounded" style="width: 600px;">
+    <h1 class="text-center">Edit Property Details</h1>
+    <a href="/manage/{{user}}" class="btn btn-primary btn-sm mt-4 mb-2">Back to My Properties</a>
+
+    <p style="color:red">{{ status|safe }}</p>
+
+
+    <div id="ui">
+      <form method="POST" class="row p-2">
+        {% csrf_token %}
+        <div class="col-md-6 p-2">
+          <label for="bedrooms" class="form-label">Number of bedrooms<span class="asteriskField">*</span></label>
+          <input type="number" min="0" max="10" name="bedrooms" class="form-control" id="bedrooms"
+            placeholder="max of 10" required>
+        </div>
+        <div class="col-md-6 p-2">
+          <label for="guest" class="form-label">Accommodates<span class="asteriskField">*</span></label>
+          <input type="number" min="0" max="15" name="guest" class="form-control" id="guest" placeholder="max of 15"
+            required>
+        </div>
+        <div class="col-md-6 p-2">
+          <label for="startdate" class="form-label">Start Date<span class="asteriskField">*</span></label>
+          <input type="text" name="startdate" class="form-control" id="startdate" placeholder="dd/mm/yy" required>
+        </div>
+        <div class="col-md-6 p-2">
+          <label for="enddate" class="form-label">End Date<span class="asteriskField">*</span></label>
+          <input type="text" name="enddate" class="form-control" id="enddate" placeholder="dd/mm/yy" required>
+        </div>
+        <div class="col-md-12 p-2">
+          <label for="rules" class="form-label">House Rules</label>
+          <input type="text" name="rules" maxlength="200" class="form-control" id="rules"
+            placeholder="e.g. do no enter basement">
+        </div>
+        <div class="col-md-12 p-2">
+          <label for="amenities" class="form-label">Amenities</label>
+          <input type="text" name="amenities" maxlength="200" class="form-control" id="amenities"
+            placeholder="e.g. WiFi included">
+        </div>
+        <div class="col-md-12 p-2">
+          <button class="btn btn-primary" type="submit" value="Update">Update</button>
+        </div>
+      </form>
+      {% for message in messages %}
+      <p id="messages" style="color:red">{{message}}</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
