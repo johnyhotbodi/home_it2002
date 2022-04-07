@@ -137,4 +137,12 @@ insert into case_log (caseid, reasons, exchangeid, complain_by_userid, complain_
 values (6,'lost item', 1,5,4);
 
 */
+create table geometry_test2(
+userid varchar(20),
+latitude decimal(9,6),
+longitude decimal(9,6),
+geom GEOMETRY(POINT, 4326));
 
+UPDATE geometry_test2
+  SET  geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
+;
