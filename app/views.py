@@ -116,7 +116,11 @@ def register(request):
                         'identification_card')
                     passport = form.cleaned_data.get('passport')
 
-                    group = Group.objects.get(name='user')
+                    if Group.objects.get(name='customer').exists():
+                        group = Group.objects.get(name='customer')
+                    else:
+                        group = 'group'
+
                     user.groups.add(group)
                     cursor.execute("INSERT INTO users (userid,first_name, last_name, email, country_code, contact, credit_card, identification_card, passport) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)", [
                         username, first_name, last_name, email, country_code, contact, credit_card, identification_card, passport])
