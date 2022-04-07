@@ -275,4 +275,95 @@
     <script src="./js/dataTables.bootstrap5.min.js"></script>
     <script src="./js/script.js"></script>
   </body>
+  =======
+<body>
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="..." class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>Revenue</h5>
+          <p>Total Revenue is XXX</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img src="..." class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>Consumers</h5>
+          <p>Total Consumers is XXX</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img src="..." class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>Total active exchanges</h5>
+          <p>Total active exchanges is XXX</p>
+        </div>
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+    <a href="logout"> logout</a>
+    <h2>Properties</h2>
+    <img src="{% static 'app/images/nus.jpg' %}" width="10%" alt="NUS logo" /><br />
+    <a href="add">List your property!</a>
+    <br></br>
+    <h3>Filter countries</h3>
+    {% csrf_token %}
+    <form class="add_your_class" method="GET" action="">
+        <input class="add_your_class" type="search" name="search">
+        <button class="add_your_class" type="submit"> Search </button>
+    </form>
+    <br /><br />
+    <table border=1>
+        <thead>
+            <th> City </th>
+            <th>Country</th>
+            <th>Address</th>
+            <th>House type</th>
+            <th>Bedrooms</th>
+            <th>Accomodates</th>
+            <th>Date available </th>
+            <th>Amenities</th>
+            <th>Duration</th>
+        </thead>
+        {% for property in records %}
+        <tr>
+            <td> {{ property.2 }} </td>
+            <td> {{ property.3 }} </td>
+            <td> {{ property.1 }} </td>
+            <td> {{ property.6 }} </td>
+            <td> {{ property.7 }} </td>
+            <td> {{ property.8 }} </td>
+            <td> {{ property.9 }} </td>
+            <td> {{ property.11 }} </td>
+            <td> {{ property.12 }} </td>
+            <a href="view/{{property.0}}"><button>View</button></a>
+            <a href="edit/{{property.0}}"><button>Edit</button></a>
+            <a href="locate/{{property.0}}"><button>Locate</button></a>
+
+            <form method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{property.0}}" />
+                <button onclick="return confirm('Are you sure you want to delete this property?');" type="submit"
+                    name="action" value="delete">Delete</button>
+            </form>|
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
 </html>
