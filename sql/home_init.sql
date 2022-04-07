@@ -146,3 +146,19 @@ geom GEOMETRY(POINT, 4326));
 UPDATE geometry_test2
   SET  geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
 ;
+
+CREATE OR REPLACE FUNCTION updategeom ()
+RETURNS Trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+   NEW.geom = st_setsrid(st_point(NEW.longitude, NEW.latitude), 4326);
+   RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER 
+geometry_test
+BEFORE INSERT OR UPDATE of latitude,longitude on 
+geometry_test2
+FOR EACH ROW EXECUTE PROCEDURE updategeom ();
