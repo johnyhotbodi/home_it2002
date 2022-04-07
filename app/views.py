@@ -404,7 +404,7 @@ def loginPage(request):
             print(user)
             if user is not None:
                 login(request, user)
-                    return redirect('index')
+                return redirect('index')
             else:
                 messages.info(request, 'email or password is incorrect!')
         else:
