@@ -79,7 +79,7 @@ complain_by_userid VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFER
 complain_of_userid VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE);
 
 
-CREATE TABLE pending(
+CREATE TABLE  IF NOT EXISTS pending(
 requested_from VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
 requested_to VARCHAR(200) REFERENCES users(userid) ON DELETE CASCADE DEFERRABLE,
 requested_property VARCHAR(200) REFERENCES property(propertyid) ON DELETE CASCADE DEFERRABLE,
@@ -137,7 +137,7 @@ insert into case_log (caseid, reasons, exchangeid, complain_by_userid, complain_
 values (6,'lost item', 1,5,4);
 
 */
-create table geometry_test2(
+create table IF NOT EXISTS geometry_test2(
 userid varchar(20),
 latitude decimal(9,6),
 longitude decimal(9,6),
