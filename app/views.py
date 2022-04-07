@@ -116,12 +116,6 @@ def register(request):
                         'identification_card')
                     passport = form.cleaned_data.get('passport')
 
-                    if Group.objects.get(name='customer').exists():
-                        group = Group.objects.get(name='customer')
-                    else:
-                        group = ['admin','customer']
-
-                    user.groups.add(group)
                     cursor.execute("INSERT INTO users (userid,first_name, last_name, email, country_code, contact, credit_card, identification_card, passport) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)", [
                         username, first_name, last_name, email, country_code, contact, credit_card, identification_card, passport])
                     return redirect('login')
@@ -410,9 +404,6 @@ def loginPage(request):
             print(user)
             if user is not None:
                 login(request, user)
-                if request.user.groups.all()[0].name == 'admin':
-                    return redirect('adminPage')
-                else:
                     return redirect('index')
             else:
                 messages.info(request, 'email or password is incorrect!')
@@ -430,9 +421,6 @@ def logoutUser(request):
 def index(request):
     """Shows the main page"""
     # Use raw query to get all objects
-    if request.user.groups.filter(name='admin').exists():
-        print('admin')
-        return redirect('adminPage')
     with connection.cursor() as cursor:
         cursor.execute(
             "SELECT * FROM property WHERE userid <> %s AND active=true ORDER BY country", [request.user.username])
