@@ -44,7 +44,7 @@ urlpatterns = [
          app.views.adviewproperty, name='adviewproperty'),
     path('adproperty', app.views.adproperty, name='adproperty'),
     path('adcase', app.views.adcase, name='adcase'),
-    path('adexchange', app.views.adexchange, name='adexchange')
-    path('geemap',app.views.geemap, name='geemap')
+    path('adexchange', app.views.adexchange, name='adexchange'),
+    path('geemap',app.views.geemap, name='geemap'),
     # path('locate/<str:id>',app.views.locate,name='locate'),
 ]
